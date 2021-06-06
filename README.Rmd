@@ -1,0 +1,43 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# dataviz
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+El paquete dataviz contiene lecciones de un curso breve de visualización de datos con R.
+
+## Installation
+
+La instalación de la última versión de dataviz [GitHub](https://github.com/) es tan simple como:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("bitsandbricks/dataviz")
+```
+## Ejemplo
+
+Una vez instalado el paquete, puede iniciarse la primera lección (de cinco en total) con:
+
+```{r ejemplo, eval=FALSE}
+learnr::run_tutorial("clase1", "dataviz")
+```
+
+```{r echo=FALSE, out.width="85%"}
+knitr::include_graphics("https://bitsandbricks.github.io/img/dataviz_lecci%C3%B3n_1.png")
+```
+
+... y del mismo modo las siguientes ("clase2", "clase3", "clase4", "clase5")

@@ -1,0 +1,68 @@
+---
+################################################################
+#                                                              #
+# Cliquear "Run Document" en RStudio para ejecutar el tutorial #
+#                                                              #
+################################################################
+title: "Puliendo gráficos para publicar"
+author: "H. Antonio Vázquez Brust"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+knitr::opts_chunk$set(echo = FALSE, comment = "")
+
+# Obtenemos datos de GapMinder
+gapminder <- dataviz::gapminder
+```
+
+## Introducción
+
+Cuando genera un gráfico, ggplot nos hace la vida más fácil tomando un montón de decisiones por nosotros: el color de los ítems con los que representamos los datos, el rango numérico de los ejes (en que número empiezan y terminan), el color de fondo, etc. Esto nos permite ver como lucen los datos tipeando lo menos posible, pero a la hora de compartir nuestras visualizaciones con el mundo vale la pena hacer ajustes para obtener aún mejores mejores resultados.
+
+
+
+```{r out.width="85%"}
+knitr::include_graphics("https://d33wubrfki0l68.cloudfront.net/8c4f8d80813b30c55d7220734f1fe1e4d82aaeb4/50127/img/ggplot-tutorial/overview.png")
+```
+
+_(Colección de bellos ggplots cortesía de [Cédric Scherer](www.cedricscherer.com/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/))_
+
+
+Esta lección será dedicada a ir más allá del aspecto que tienen los gráficos de ggplot _por defecto_, puliendo los gráficos para dejarlos preparados para su publicación.
+
+Una vez mas usaremos el paquete de R [**tidyverse**](https://www.tidyverse.org/), que incluye a ggplot.
+
+
+```{r library-calls, echo = TRUE, eval = FALSE}
+# cargar la librería que vamos a usar
+library(tidyverse)
+```
+
+El data set con el que practicaremos fue compilado por [Gapminder](https://www.gapminder.org/ ), una ONG sueca cuya misión declarada es "luchar contra la ignorancia devastadora con una visión del mundo basada en hechos, que todo el mundo pueda entender"
+
+contiene indicadores de desarrollo de países en todo el mundo, con observaciones en intervalos de 5 años:
+
+```{r temps-beirut, echo = TRUE}
+gapminder
+```
+
+## Uso básico de `ggplot` 
+
+
+Vean el videardo, tiene subs en español!
+
+https://www.youtube.com/watch?v=jbkSRLYSojo
+
+
+
+
+Si le pasamos un dataframe a `ggplot()`, sin agregar nada más, obtenemos un gŕafico vacío:
+
+
+```{r ggplot-vacio, exercise=TRUE}
+ggplot(gapminder)
+```
