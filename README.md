@@ -10,10 +10,10 @@
 El paquete dataviz contiene cinco lecciones (o clases) de un curso breve
 de visualización de datos con R.
 
-## Installation
+## Instalación
 
-La instalación de la última versión de dataviz en
-[GitHub](https://github.com/) es tan simple como:
+Se puede instalar la última versión de dataviz en
+[GitHub](https://github.com/) con:
 
 ``` r
 # install.packages("devtools")
