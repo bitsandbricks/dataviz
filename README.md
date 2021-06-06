@@ -12,7 +12,7 @@ de visualización de datos con R.
 
 ## Installation
 
-La instalación de la última versión de dataviz
+La instalación de la última versión de dataviz en
 [GitHub](https://github.com/) es tan simple como:
 
 ``` r

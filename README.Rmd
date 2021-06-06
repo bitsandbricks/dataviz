@@ -22,7 +22,7 @@ El paquete dataviz contiene cinco lecciones (o clases) de un curso breve de visu
 
 ## Installation
 
-La instalación de la última versión de dataviz [GitHub](https://github.com/) es tan simple como:
+La instalación de la última versión de dataviz en [GitHub](https://github.com/) es tan simple como:
 
 ``` r
 # install.packages("devtools")
