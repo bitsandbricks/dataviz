@@ -25,17 +25,17 @@ temps_beirut <- temps[temps$city == "Beirut",]
 
 En esta lección repasaremos un concepto central de `ggplot`, la asignación (_mapping_ en inglés) de atributos estéticos a los valores que toma una variable. Dicho de otra forma, como mostrar de modo perceptible a la vista la diferencia entre valores: con distintos colores, distintos tamaños, distintas posiciones en un gráfico, etc.
 
-Usaremos el paquete de R [**tidyverse**](https://www.tidyverse.org/), que incluye -entre muchas otras herramientas- a `ggplot()`, una función llena de posibilidades que es como una navaja suiza para hacer gráficos.
+Usaremos el paquete de R [**ggplot2**](https://ggplot2.tidyverse.org/), que incluye funciones para realizar una gran variedad de visualizaciones.
 
 
 ```{r library-calls, echo = TRUE, eval = FALSE}
 # cargar la librería que vamos a usar
-library(tidyverse)
+library(ggplot2)
 ```
 
 El data set con el que practicaremos contiene la temperatura promedio para cada día del 2019 en la ciudad de Beirut, Líbano:
 
-```{r temps-beirut, echo = TRUE}
+```{r temps-beirut}
 temps_beirut
 ```
 
@@ -53,13 +53,16 @@ ggplot(temps_beirut)
 
 Esto es porque necesitamos definir al menos una geometría (el recurso visual con el que vamos a mostrar la información, como líneas, puntos, barras, etc.) y al menos una asignación estética (especificar cuales variables queremos mostrar, y que atributo estético va a representar sus valores, como el color, el tamaño, la transparencia, etc.).
 
-`ggplot()` implementa un marco teórico para la creación de visualizaciones, ["la gramática de los gráficos"](************ INSERTAR URL CORRESPONDIENTE ********). Ésta permite expresar en forma concisa los componentes de un gráfico: 
+`ggplot()` implementa un marco teórico para la creación de visualizaciones, ["la gramática de los gráficos"](https://www.slideshare.net/0xdata/leland-wilkinson-h2oai-the-grammar-of-graphics-and-the-future-of-big-data-visualization-h2o-world-2019-nyc). Ésta permite expresar en forma concisa los componentes de un gráfico: 
 
-
-```{r out.width="85%"}
+```{r out.width="100%"}
 knitr::include_graphics("https://bitsandbricks.github.io/img/ggplot_resumen.png")
 ```
 
+<center>
+
+_adaptado delmaterial de [David Keyes](https://rfortherestofus.com/)_
+</center>
 
 ¿Cómo funciona ésto en la práctica? El caso de uso más simple de ggplot consiste en: 
 
