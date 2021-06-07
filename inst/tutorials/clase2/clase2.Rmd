@@ -76,10 +76,16 @@ ggplot(gapminder, ___) +
   ___()
 ```
 
-```{r plotminder1-hint}
+```{r plotminder1-hint-1}
+ggplot(gapminder, aes(___)) +
+  geom_point()
+```
+
+```{r plotminder1-hint-2}
 ggplot(gapminder, aes(x = PBIpc, y = ___)) +
   geom_point()
 ```
+
 
 ```{r plotminder1-solution}
 ggplot(gapminder, aes(x = PBIpc, y = expVida)) +
@@ -115,13 +121,13 @@ Ahora se vislumbra una disposición similar a la del gráfico del video, pero en
 Vamos a filtrar los datos para quedarnos sólo con la observación más reciente disponible, la de 2007. Hay muchas, pero muchas maneras de hacer eso en R, pero aquí vamos a usar la función `filter()` del paquete [dplyr](https://dplyr.tidyverse.org/). Si no conocen esta herramienta, o necesitan un repaso rápido, pueden revisar ["transformando los datos"](https://bitsandbricks.github.io/ciencia_de_datos_gente_sociable/poniendo-los-datos-en-forma.html#transformando-los-datos). Por ahora la vamos a usar de forma muy simple: en lugar de llamar a la variable gapminder, vamos a usar el resultado de filtrar su contenido de forma tal que solo usemos las filas donde la variable "año" toma el valor _2007_.
 
 Activamos el paquete `dplyr`
-```{r include=TRUE, eval=FALSE}
+```{r echo = TRUE, eval=FALSE}
 library(dplyr)
 ```
 
 Y ahora ya podemos usar su función `filter()` para modificar nuestro dataset:
 
-```{r plotminder3}
+```{r plotminder3, echo=TRUE}
 ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida)) +
   geom_point() +
   scale_x_log10()
@@ -145,7 +151,8 @@ ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = ___, 
 ```
 
 ```{r plotminder4-solution}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
   geom_point() +
   scale_x_log10()
 
@@ -162,7 +169,8 @@ En el video de la BBC, la visualización se presenta sin leyendas para reducir a
 
 
 ```{r plotminder5, exercise=TRUE}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
   geom_point() +
   scale_x_log10() +
   guides(___ = ___, ___ = ___)
@@ -170,7 +178,8 @@ ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl,
 ```
 
 ```{r plotminder5-hint-1}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
   geom_point() +
   scale_x_log10() +
   guides(color = ___, ___ = ___)
@@ -178,7 +187,8 @@ ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl,
 ```
 
 ```{r plotminder5-hint-2}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
   geom_point() +
   scale_x_log10() +
   guides(color = FALSE, ___ = ___)
@@ -186,7 +196,8 @@ ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl,
 ```
 
 ```{r plotminder5-solution}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
   geom_point() +
   scale_x_log10() +
   guides(size = FALSE, color = FALSE)
@@ -199,7 +210,8 @@ Con frecuencia preferimos quedarnos con la leyenda, para invitar a la audiencia 
 En nuestro gráfico, algo que podemos mejorar es la representación de los números muy grandes: esos millones de personas de la población. Por defecto, R usa notación científica para abreviar los números muy grandes (o muy anchos, deberíamos decir: los números ínfimos, con muchos espacios decimales en cero, también se abrevian). Por eso en nuestro gráfico aparecen valores como "1.25e+09", que significa "1,25 * 10 elevado a la 9", o sea 1.250 millones. La brevedadad es buena a la hora de comunicar, pero no cuando se trata de números - la escala para la variable de población, en notación científica, resulta muy difícil de interpretar para la mayoría de las personas:
 
 ```{r plotminder-ejemplo}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
   geom_point() +
   scale_x_log10() 
 
@@ -210,20 +222,23 @@ Se puede hacer que R se abstenga de abreviar usando la notación científica (ej
 Entonces nos quedamos con las leyendas (ya no las deshabilitamos con `guides()`), y le podemos pedirle a ggplot que el tamaño de los puntos ya no represente los valores de la columna "pobl", si no el resultado de los valores de la columna divididos por un millón. ¿Cómo sería?
 
 ```{r plotminder6, exercise=TRUE}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = ___, color = continente)) +
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = ___, color = continente)) +
   geom_point() +
   scale_x_log10()
 ```
 
 ```{r plotminder6-hint}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl/1______, color = continente)) +
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1______, color = continente)) +
   geom_point() +
   scale_x_log10()
 ```
 
 
 ```{r plotminder6-solution}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
   geom_point() +
   scale_x_log10()
 
@@ -244,14 +259,16 @@ color_continentes <- list("Europe" = "darkorange", "Asia" = "red", "Africa" = "b
 Y luego podemos usarla para indicarle a ggplot los colores exactos que queremos usar. Para eso sirve `scale_color_manual()`, con su parámetro "values". Probemos:
 
 ```{r plotminder7, exercise=TRUE}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
   geom_point() +
   scale_x_log10() +
   scale___(values = ___)
 ```
 
 ```{r plotminder7-hint}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
   geom_point() +
   scale_x_log10() +
   scale_color_manual(values = ___)
@@ -259,7 +276,8 @@ ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl/
 
 
 ```{r plotminder7-solution}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
   geom_point() +
   scale_x_log10() +
   scale_colour_manual(values = color_continentes)
@@ -267,13 +285,14 @@ ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl/
 ```
 ### Cambiando el "tema"
 
-hasta aquí hemos podido ajustar los atributos gráficos que dependen estrechamente de los datos, como las escalas, los colores y los tamaños. ¿Pero que hay de otros componentes visuales que podríamos cambiar, como la tipografía y su tamaño o el color de fondo? 
+Hasta aquí hemos podido ajustar los atributos gráficos que dependen estrechamente de los datos, como las escalas, los colores y los tamaños. ¿Pero que hay de otros componentes visuales que podríamos cambiar, como la tipografía y su tamaño o el color de fondo? 
 
 Esos atributos corresponden al "tema" (_theme_ en inglés) que apliquemos. Los temas son como "packs" de parámetros que definen el aspecto de todos los componentes no relacionados con los datos, y pueden cambiar drásticamente el _look_ de nuetros gráficos. El paquete `ggplot2` incluye varias funciones que aplican [temas predefinidos](https://ggplot2.tidyverse.org/reference/ggtheme.html), como "theme_dark()" (la opción por defecto), "theme_dark", "theme_void", "theme_minimal", etc. Por eso para usar los temas alcanza con sumar una línea que llame a la función correspondiente. Por ejemplo, para usar "theme_dark":
 
 
-```{r plotminder8, include=TRUE}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+```{r plotminder8, echo = TRUE}
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
   geom_point() +
   scale_x_log10() +
   scale_colour_manual(values = color_continentes) + 
@@ -281,12 +300,13 @@ ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl/
 
 ```
 
-Incluso podemos definir a mano cada componente visual de los gráficos, creando así nuestro propio tema. No vamos a entrar en detalles ahora, pero para quien tenga interés el camino comienza por el uso de la [función `theme`](https://ggplot2.tidyverse.org/reference/theme.html). También existen paquetes de R que agregan a nuestro arsenal nuevos temas listos para usar, como [`ggthemes`](https://ggplot2.tidyverse.org/reference/theme.html) y [`hrbrthemes`](https://cinc.rud.is/web/packages/hrbrthemes/). 
+Incluso podemos definir a mano cada componente visual de los gráficos, creando así nuestro propio tema. No vamos a entrar en detalles ahora, pero para quien tenga interés el camino comienza por el uso de la [función `theme`](https://ggplot2-book.org/polishing.html#modifying-theme-components). También existen paquetes de R que agregan a nuestro arsenal nuevos temas listos para usar, como [`ggthemes`](https://ggplot2.tidyverse.org/reference/theme.html) y [`hrbrthemes`](https://cinc.rud.is/web/packages/hrbrthemes/). 
 
-Para cerrar el tema de los temas (¡ja!) va una recomendación. El tema minimalista "theme_minimal" viene con `ggplot2` por lo que ya lo tenemos disponible, y con el mínimo esfuerzo de escribir la línea que lo aplica obtenemos un gráfico de aspecto más "limpio" que el del tema por default:
+Para cerrar el tema de los temas (¡ja!) va una recomendación. El tema minimalista "theme_minimal" viene con `ggplot2` por lo que ya lo tenemos disponible, y con sólo agregar la línea que lo aplica obtenemos un gráfico de aspecto más "limpio" que el del tema por default:
 
-```{r plotminder9, include=TRUE}
-ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+```{r plotminder9, echo = TRUE}
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
   geom_point() +
   scale_x_log10() +
   scale_colour_manual(values = color_continentes) + 
@@ -297,15 +317,13 @@ Ya estamos listos para pasar a los toques finales.
 
 ## Los toques finales
 
+En el contexto de la exploración de los datos, lo importante es trabajar en forma rápida. Probamos una u otra técnica de visualización y refinamos nuestros resultados hasta hallar patrones interesantes, o sacarnos dudas acerca del contenido. No necesitamos ponerle título a las visualizaciones, porque ya sabemos de que tratan (¡acabamos de escribirlas!). No nos preocupa que los nombres de los ejes indiquen en forma clara la variable representan, porque ya lo sabemos de antemano.
 
+Pero cuando queremos guardar un gráfico para compartir con otras personas, sea publicándolo en un _paper_ o enviándolo por email a colegas, necesitamos tener más cuidado. Hemos pasado del ámbito de la exploración al de la comunicación. Ahora si nos importa la claridad, porque no sabemos de antemano cuánta familiaridad tiene con los datos la eventual audiencia.
 
-En el contexto de la exploración, lo importante es trabajar en forma rápida, probando una u otra técnica de visualización y refinando nuestros resultados hasta hallar patrones interesantes, o sacarnos dudas acerca de los datos. No necesitamos ponerle título a las visualizaciones, porque ya sabemos de que tratan (¡acabamos de escribirlas!). No nos preocupa que los nombres de los ejes indiquen en forma clara la variable representan, porque ya lo sabemos de antemano.
+Si bien la comunicación clara es un arte cuyas reglas dependen del contexto, y además cada quien tiene su estilo, podemos mencionar al menos tres elementos que no deberían faltar en un gráfico pensado para compartir:
 
-Pero cuando queremos guardar un gráfico para compartir con otros, sea publicándola en un paper, o enviándola por email a un amigo, necesitamos tener más cuidado. Hemos pasado del ámbito de la exploración al de la comunicación. Ahora si debe preocuparnos la claridad, porque no sabemos el grado de familiaridad que tiene con los datos la eventual audiencia.
-
-Si bien la comunicación clara es un arte cuyas reglas dependen del contexto, y además cada quien tiene su estilo, podemos decretar al menos tres elementos que no deberían faltar en un gráfico destinado a comunicar algo a los demás:
-
-* Un título descriptivo, pero breve
+* Un título descriptivo, pero breve. 
 * Etiquetas claras (no ambiguas) en los ejes
 * Nombres descriptivos en las leyendas
 
@@ -314,3 +332,96 @@ y ya que estamos, dos opcionales:
 * Un subtítulo donde poner detalles importantes que no entran en un título breve
 * Una nota al pie con información adicional: fuente de los datos, cita académica, advertencias, etc.
 
+Todo ello puede resolverse con la misma función: `labs()`. Esta se encarga de definir título y subtítulo, nombres de ejes y de leyendas, y nota al pie si hiciera falta.
+
+Empecemos por título y subtítulo, que se asignan con los parámetros _title_ y _subtitle_. Pidamos que el título sea "Riqueza vs. salud en los países del mundo", y el subtítulo, "según datos 2007":  
+
+```{r plotminder10, exercise=TRUE}
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  theme_minimal() +
+  ___(___)
+```
+
+```{r plotminder10-hint}
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  theme_minimal() +
+  labs(title = ___, ___ = ___)
+```
+
+
+```{r plotminder10-solution}
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  theme_minimal() +
+  labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007")
+
+```
+Ahora mejoremos las etiquetas de los ejes, y de la leyenda de tamaño. La leyenda dec color está bien así, la vamos a dejar en paz. Como podríamos habernos imaginado, el parámetro de `labs()` para definir el nombre que llevaran las $x$ es _x_ (como `labs(x  = "nombre para el eje de las x")`). El parámetro para las $y$ es _y_. El que fija el título de la leyenda de tamaño es _size_, y así con el resto de las leyendas: _color_, _shape_, o el atributo que hayamos definido dentro de `aes()` al hacer el gráfico. 
+
+Pongamos "población (millones)" como título de la leyenda de tamaño, "PBI per capita (USD)" en las $x$, y "expectativa de vida en años" en las $y$:
+
+```{r plotminder11, exercise=TRUE}
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  theme_minimal() +
+  labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007",
+       ___)
+```
+
+```{r plotminder11-hint}
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  theme_minimal() +
+  labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007",
+       size = ___, x = ___, ___ = ___)
+
+```
+
+
+```{r plotminder11-solution}
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  theme_minimal() +
+  labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007",
+       size = "población (millones)", x = "PBI per capita (USD)", y = "expectativa de vida en años")
+
+```
+
+
+Y por último, una nota al pie con la fuente de los datos, vía _caption_ :
+
+```{r plotminder12, echo = TRUE}
+ggplot(filter(gapminder, año == 2007), 
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  theme_minimal() +
+  labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007",
+       size = "población (millones)", 
+       x = "PBI per capita (USD)", y = "expectativa de vida en años",
+       caption = "fuente: Gapminder, www.gapminder.com")
+
+```
+
+Y con eso, terminamos la lección. 

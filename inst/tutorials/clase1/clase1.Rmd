@@ -235,7 +235,7 @@ El gráfico que obtuvimos funciona como recordatorio de que en muchas ocasiones 
 
 Muchos de los atributos estéticos -como `color`, `fill`, y también `size` que cambia el tamaño de puntos y grosor de líneas- pueden ser usados como parámetros fijos para una geom; es decir, que no cambien de acuerdo a los valores de una variable, sino que son iguales para todos las figuras graficadas. Esto se logra definiendo un valor específico, y fuera del llamado a  `aes()`. Por ejemplo, `color = "blue"` en lugar de la asignación de una variable, como `aes(color = city)`. Nótese la diferencia: dentro de la función `aes()`, no definimos colores específicos, ggplot se encarga de eso. Sólo decimos que los valores encontrados en la columna `city` deben corresponder a diferentes colores. (Más adelante vamos a aprender como indicarle a ggplot que use escalas de colores específicas cuando asigna colores por variable).
 
-Intentémoslo con el ejemplo del boxplot en la sección anterior. Asignemos el color como atributo dependiente de la ciudad, pero dejemos el color de las líneas fijo en color azul marino (`"navy blue"`) de acuerdo a los [nombres de colores que R sabe interpretar](************************ INSERTAR URL CORRESPONDIENTE AQUI *****************)
+Intentémoslo con el ejemplo del boxplot en la sección anterior. Asignemos el color como atributo dependiente de la ciudad, pero dejemos el color de las líneas fijo en color azul marino (`"navy blue"`) de acuerdo a los [nombres de colores que R sabe interpretar](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf)
 
 
 ```{r ggplot-params, exercise=TRUE}
