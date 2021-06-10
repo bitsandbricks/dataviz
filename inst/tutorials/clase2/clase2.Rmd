@@ -5,7 +5,7 @@
 #                                                              #
 ################################################################
 title: "Puliendo gráficos para publicar"
-author: "H. Antonio Vázquez Brust"
+author: "H. Antonio Vazquez Brust"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
@@ -28,7 +28,7 @@ Cuando genera un gráfico, ggplot nos hace la vida más fácil tomando un montó
 knitr::include_graphics("https://miro.medium.com/max/3900/0*DDRU1L5LIJkgDBxd.png")
 ```
 <center>
-_visualizaciones realizadas con `ggplot2` por el [equipo de visualización y periodismo de datos de la BBC](https://medium.com/bbc-visual-and-data-journalism/how-the-bbc-visual-and-data-journalism-team-works-with-graphics-in-r-ed0b35693535))_
+_visualizaciones realizadas con `ggplot2` por el [equipo de visualización y periodismo de datos de la BBC](https://medium.com/bbc-visual-and-data-journalism/how-the-bbc-visual-and-data-journalism-team-works-with-graphics-in-r-ed0b35693535)_
 
 </center>
 

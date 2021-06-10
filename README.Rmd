@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-El paquete dataviz contiene cinco lecciones (o clases) de un curso breve de visualización de datos con R.
+El paquete dataviz contiene seis lecciones (o clases) de un curso breve de visualización de datos con R.
 
 ## Instalación
 
@@ -30,14 +30,15 @@ devtools::install_github("bitsandbricks/dataviz")
 ```
 ## Ejemplo
 
-Una vez instalado el paquete, puede iniciarse la primera lección (de cinco en total) con:
+Una vez instalado el paquete, puede iniciarse la primera lección (de seis en total) con
 
 ```{r ejemplo, eval=FALSE}
 learnr::run_tutorial("clase1", "dataviz")
 ```
 
-```{r echo=FALSE, out.width="85%"}
-knitr::include_graphics("https://bitsandbricks.github.io/img/dataviz_lecci%C3%B3n_1.png")
-```
+... y del mismo modo las siguientes: "clase2" (mostrada aquí), "clase3", "clase4", "clase5", o "clase6".
 
-... y del mismo modo las siguientes ("clase2", "clase3", "clase4", "clase5")
+
+```{r echo=FALSE, out.width="85%"}
+knitr::include_graphics("https://bitsandbricks.github.io/img/dataviz_clase_2.png")
+```

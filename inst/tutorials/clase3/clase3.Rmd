@@ -1,0 +1,17 @@
+---
+################################################################
+#                                                              #
+# Cliquear "Run Document" en RStudio para ejecutar el tutorial #
+#                                                              #
+################################################################
+title: "Visualizando cantidades, proporciones y distribuciones"
+author: "H. Antonio Vazquez Brust"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+

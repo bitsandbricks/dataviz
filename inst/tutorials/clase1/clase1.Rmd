@@ -5,7 +5,7 @@
 #                                                              #
 ################################################################
 title: "Visualizar información asignando propiedades estéticas a los datos"
-author: "H. Antonio Vázquez Brust remixando a Claus O. Wilke"
+author: "H. Antonio Vazquez Brust remixando a Claus O. Wilke"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---

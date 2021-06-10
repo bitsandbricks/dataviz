@@ -7,7 +7,7 @@
 
 <!-- badges: end -->
 
-El paquete dataviz contiene cinco lecciones (o clases) de un curso breve
+El paquete dataviz contiene seis lecciones (o clases) de un curso breve
 de visualización de datos con R.
 
 ## Instalación
@@ -23,13 +23,13 @@ devtools::install_github("bitsandbricks/dataviz")
 ## Ejemplo
 
 Una vez instalado el paquete, puede iniciarse la primera lección (de
-cinco en total) con:
+seis en total) con
 
 ``` r
 learnr::run_tutorial("clase1", "dataviz")
 ```
 
-<img src="https://bitsandbricks.github.io/img/dataviz_lecci%C3%B3n_1.png" width="85%" />
+… y del mismo modo las siguientes: “clase2” (mostrada aquí), “clase3”,
+“clase4”, “clase5”, o “clase6”.
 
-… y del mismo modo las siguientes (“clase2”, “clase3”, “clase4”,
-“clase5”)
+<img src="https://bitsandbricks.github.io/img/dataviz_clase_2.png" width="85%" />
