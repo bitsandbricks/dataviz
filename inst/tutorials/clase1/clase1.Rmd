@@ -271,3 +271,10 @@ ggplot(temps, aes(x = month, y = temperature, color = city)) +
 ```
 
 ¡Y con eso termina la primera lección!
+
+
+Para seguir practicando, un excelente recurso es libro *Data Visualization - A practical introduction* por Kieran Healy. Se puede consultar en línea, y tenemos el capítulo dedicado a los fundamentos de `ggplot` aquí: ["Make a plot":](https://socviz.co/makeplot.html)
+
+```{r out.width="60%", fig.align="center"}
+knitr::include_graphics("https://socviz.co/assets/dv-cover-pupress.jpg")
+```

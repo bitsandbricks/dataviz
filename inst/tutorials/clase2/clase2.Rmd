@@ -36,7 +36,6 @@ Esta lección será dedicada a ir más allá del aspecto que tienen los gráfico
 
 Para empezar, activamos [**ggplot2**](https://ggplot2.tidyverse.org/):
 
-
 ```{r library-calls, echo = TRUE, eval = FALSE}
 library(ggplot2)
 ```
