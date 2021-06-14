@@ -489,4 +489,4 @@ ggplot(gapminder_2007, aes(y = "", fill = continente)) +
 
 ¡Ahora ya saben!
 
-
+Para seguir leyendo sobre la visualización de cantidades, proporciones y distribuciones tienen nada menos que los capítulos [7](https://clauswilke.com/dataviz/histograms-density-plots.html), [8](https://clauswilke.com/dataviz/ecdf-qq.html), [9](https://clauswilke.com/dataviz/boxplots-violins.html), [10](https://clauswilke.com/dataviz/visualizing-proportions.html) y [11](https://clauswilke.com/dataviz/nested-proportions.html) de _Fundamentals of Data Visualization_ por Claus Wilke.
