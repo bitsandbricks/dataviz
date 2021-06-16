@@ -14,6 +14,7 @@ runtime: shiny_prerendered
 library(learnr)
 library(ggplot2)
 library(dplyr)
+library(ggmap)
 knitr::opts_chunk$set(echo = FALSE, comment = "")
 # Obtenemos datos de GapMinder
 gapminder <- dataviz::gapminder
@@ -251,8 +252,8 @@ Con eso podemos armar una lista con valores y sus colores asignados para pasarle
 En R tenemos nada menos que 657 colores que podemos llamar por nombre, como "hotpink" o "aquamarine". COmo es imposible recordarlos a todos, se puede recurrir a una [guía de colores](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf) para encontrar los que necesitamos. Habiendo identificado nuestros colores, definimos la escala manual así:
 
 ```{r}
-color_continentes <- list("Europe" = "darkorange", "Asia" = "red", "Africa" = "blue", 
-                          "Americas" = "yellow", "Oceania" = "purple")
+color_continentes <- c("Europe" = "darkorange", "Asia" = "red", "Africa" = "blue",
+                       "Americas" = "yellow", "Oceania" = "purple")
 ```
 
 Y luego podemos usarla para indicarle a ggplot los colores exactos que queremos usar. Para eso sirve `scale_color_manual()`, con su parámetro "values". Probemos:

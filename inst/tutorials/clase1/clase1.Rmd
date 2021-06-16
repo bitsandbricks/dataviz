@@ -145,6 +145,7 @@ ggplot(temps_beirut, aes(x = temperature, y = month)) +
   geom_boxplot()
 ```
 
+Más adelante vamos a regresar a los boxplots, explicando cómo se interpretan. 
 
 ## Agregando color
 

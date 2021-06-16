@@ -6,69 +6,507 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
-knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+library(sf)
+#knitr::opts_chunk$set(echo = FALSE)
+subte_lineas <- read_sf("http://bitsandbricks.github.io/data/subte_lineas.geojson")
+subte_estaciones <- read_sf("http://bitsandbricks.github.io/data/subte_estaciones.geojson")
 ```
 
 
-## Topic 1
+## Información geográfica y mapas
 
-### Exercise 
+Hasta hace poco tiempo, labores como la producción de mapas y el análisis espacial estaban reservadas para especialistas, debido a la complejidad de las tareas y al alto costo de producción y adquisición de datos geográficos. Pero durante las dos últimas décadas la tecnología digital cambió el panorama. Una dramática caída en el costo asociado a adquirir y procesar información geográfica (pensemos en satélites y computadoras multiplicándose y bajando de precio) dio paso al mapa digital como herramienta universal. El consumo de sofisticados mapas y otros productos geográficos se volvió masivo y cotidiano, con Google Maps como el exponente más conocido. Apenas había pasado la novedad de disponer de mapas en alta resolución de todo el mundo accesibles al instante desde nuestros escritorios, cuando la llegada de los _smartphones_ popularizó el acceso en cualquier momento y lugar.
 
-*Here's a simple exercise with an empty code chunk provided for entering the answer.*
+El mismo proceso que nos convirtió a todos en consumidores constantes de información geográfica también nos da la oportunidad de ser los productores. Sin dudas, hacer mapas se ha vuelto más fácil que nunca antes. Existen cada vez más repositorios con información georreferenciada de acceso publico -datasets que incluyen información precisa sobre su ubicación geográfica. Al mismo tiempo, maduran y se hacen más fáciles de usar las herramientas para análisis y visualización espacial. 
 
-Write the R code required to add two plus two:
+En los procesos sociales, el "dónde" suele ser un aspecto clave. Es central para quienes estudiamos -por ejemplo- las ciudades o las dinámicas de la política, siempre tan arraigadas a lo territorial. Esto vuelve al mapa una de las herramientas de visualización más importantes que podemos emplear.
 
-```{r two-plus-two, exercise=TRUE}
+En R contamos con varios paquete de funciones que permiten manipular información espacial con facilidad. A continuación vamos a aprender a combinarlos con las herramientas que ya hemos aprendido, para hacer análisis geográfico y crear nuestros propios mapas.
+
+### Los datos georreferenciados
+
+El atributo que distingue a los datos georreferenciados, lo que los hace merecer ese nombre, es que representan ubicaciones exactas sobre la superficie de la Tierra. Representar en forma precisa una posición sobre la superficie terrestre es un todo un reto. Para empezar, la Tierra tiene una forma irregular. A pesar de cómo solemos imaginarla y dibujarla, no es una esfera perfecta sino que está "achatada" en los polos, dificultando la matemática necesaria para comparar posiciones y medir distancias. Luego, está el problema de cómo mostrar sobre papel impreso, o en una pantalla digital, -superficies planas- rasgos geográficos que pertenecen a una superficie tridimensional esférica. La solución a estos problemas toma la forma de sistemas de coordenadas de referencia (_CRS_ por sus siglas en inglés), y de proyecciones cartográficas. 
+
+Los CRS son un sistema de números que definen ubicaciones sobre la superficie de la Tierra; funcionan como direcciones. El tipo de CRS más conocido es el que usa latitud y longitud, para definir posiciones en los ejes norte-sur y este-oeste.
+
+Las proyecciones cartográficas son instrucciones para traducir a un plano la disposición de puntos ubicados en la esfera terrestre. Algo así como las instrucciones para dibujar en dos dimensiones las disposición de fronteras, accidentes geográficos, calles o cualquier otro objeto que se extiende sobre la superficie curva del planeta. Como en toda traducción, hay algo que se pierde en el proceso. Todo los mapas "mienten", en el sentido en que presentan una versión distorsionada de la superficie de terrestre. Esto es inevitable; no existe forma de pasar de la esfera al plano sin distorsionar la forma, la superficie, la distancia o la dirección de los rasgo geográficos. Existen muchísimas proyecciones distintas, cada una pensada para minimizar alguno de los tipos de distorsión, o para encontrar una solución de compromiso que los balancee.
+
+```{r echo=FALSE, fig.align="center", out.width="85%"}
+knitr::include_graphics('https://bitsandbricks.github.io/ciencia_de_datos_gente_sociable/imagenes/proyecciones.png')
+```
+<center>
+Distintos sistemas de proyección cartográfica
+
+</center>
+
+La proyección más famosa es la _Mercator_, en uso desde el siglo XVI cuando fue creada para asistir la navegación marítima. Su fuerte es que no distorsiona las direcciones, por lo que permite fijar un rumbo de navegación consultando el mapa. Su principal problema es que produce una distorsión notable en las áreas cercanas a los polos: Groenlandia aparenta el mismo tamaño que toda África, cuando en realidad tiene sólo un quinceavo de su superficie. Por esa razón,  la proyección perdió popularidad en el siglo XX cuando comenzaron a preferirse alternativas que respetan las áreas, como las cuatro mostradas antes. Pero ese no fue el fin: en el siglo XXI la vetusta proyección Mercator recuperó protagonismo. Google la eligió para sus mapas en línea, y por razones de compatibilidad otros proveedores de mapas digitales la adoptaron también. Así, y para entendible irritación de especialistas en geografía, Mercator se convirtió en el estándar de facto para aplicaciones geográficas y mapas en la web. 
+
+```{r echo=FALSE, fig.align="center", out.width="85%"}
+knitr::include_graphics('https://bitsandbricks.github.io/ciencia_de_datos_gente_sociable/imagenes/mapamundi_mercator.png')
+```
+<center>
+La inescapable proyección Mercator
+
+</center>
+
+En la práctica, si trabajamos en forma frecuente con archivos georreferenciados vamos a sufrir tarde o temprano de problemas de coordenadas o proyección. El más común de ellos: tener una fuentes de datos geográficos que no podemos comparar con otras, porque desconocemos el sistema de coordenadas que se usó para crearla; es decir, no podemos saber a que posición sobre el planeta corresponde cada observación en los datos.
+
+### Accediendo a datos geográficos
+
+Otro problema asociado a trabajar con datos geográficos es el de los formatos de archivo. El formato más común es el denominado "shapefile", inventado por la empresa ESRI (los creadores del software ArcGIS). Es un formato incómodo porque guarda la información en varios archivos distintos, que suelen ser combinados en un archivo .zip para su distribución. Un inconveniente aún mayor es que los nombres de las variables en un shapefile deben tener 10 caracteres o menos, lo que facilita el uso de abreviaturas ininteligibles. A pesar de éstos y otros detrimentos, el formato es tan común que se ha vuelto sinónimo de archivo con información geográfica, y resiste a pesar de los esfuerzos por reemplazarlo con alternativas más modernas. Una de ellas es "GeoJSON", un estándar abierto que corrige los dos inconvenientes mencionados antes. Para nuestros ejercicios usaremos datos geográficos en esta último formato.
+
+
+Vamos a trabajar, como siempre con `ggplot2`. Y ahora también sumamos el paquete [`sf`](https://r-spatial.github.io/sf/), que brinda funciones para trabajar con datos georefrenciados.
+
+
+```{r echo=TRUE, eval=FALSE}
+library(ggplot2)
+library(sf)
+```
+
+
+Practicaremos con datos georeferenciados en polígonos: el territorio de la Ciudad de Buenos Aires dividido en radios censales, la unidad geográfica más pequeña para la que se dispone de datos públicos producidos por el censo nacional.
+
+Podemos leemos el archivo con datos geográficos directo desde internet:
+
+```{r}
+radios <- read_sf("https://bitsandbricks.github.io/data/CABA_rc.geojson")
 
 ```
 
-### Exercise with Code
+Como con cualquier otro dataset, podemos escribir su nombre de variable y ejecutar la línea para ver el contenido: 
 
-*Here's an exercise with some prepopulated code as well as `exercise.lines = 5` to provide a bit more initial room to work.*
-
-Now write a function that adds any two numbers and then call it:
-
-```{r add-function, exercise=TRUE, exercise.lines = 5}
-add <- function() {
-  
-}
+```{r}
+radios
 ```
 
-## Topic 2
+- "RADIO_ID" es el código que identifica cada radio censal. 
+- "BARRIO" y "COMUNA" representan barrio y comuna de cada radio (vaya sorpresa!). 
+- "POBLACION" indica la cantidad de habitantes del radio, según Censo 2010.
+- "HOGARES_NBI" representa la cantidad de hogares donde se encontró que al menos una de sus necesidades básicas insatisfechas. 
+- "AREA_KM2" indica la superficie. 
+- y por último queda la columna `geometry`, que contiene una serie de puntos que permiten trazar la silueta de cada radio (sus polígonos). Nosotros no vamos a prestarle atención, pero para R es fundamental, ya que le permite proyectar mapas y hacer cálculos geométricos cuando se lo pidamos.
 
-### Exercise with Hint
+Ahora, a generar mapas.
+ 
+## Visualizando información geográfica
 
-*Here's an exercise where the chunk is pre-evaulated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
+La visualización de información geográfica por excelencia es el mapa... ¡por supuesto!
 
-Modify the following code to limit the number of rows printed to 5:
+`ggplot()` puede graficar datos geográficos empleando la geometría `geom_sf()`. Probemos:
 
-```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
-mtcars
+
+```{r geom-sf, exercise=TRUE}
+ggplot(radios) +
+  ___
 ```
 
-```{r print-limit-hint}
-head(mtcars)
+```{r geom-sf-solution}
+ggplot(radios) +
+  geom_sf()
 ```
 
-### Quiz
+Ahora usemos el atributo estético "fill" para pintar el interior de cada polígono de acuerdo a la cantidad de gente que vive allí (variable "POBLACION"):
 
-*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
 
-Some questions to verify that you understand the purposes of various base and recommended R packages:
-
-```{r quiz}
-quiz(
-  question("Which package contains functions for installing other R packages?",
-    answer("base"),
-    answer("tools"),
-    answer("utils", correct = TRUE),
-    answer("codetools")
-  ),
-  question("Which of the R packages listed below are used to create plots?",
-    answer("lattice", correct = TRUE),
-    answer("tools"),
-    answer("stats"),
-    answer("grid", correct = TRUE)
-  )
-)
+```{r geom-sf-fill, exercise=TRUE}
+ggplot(radios) +
+  geom_sf(___)
 ```
+
+```{r geom-sf-fill-hint}
+ggplot(radios) +
+  geom_sf(aes(fill = ___))
+```
+
+```{r geom-sf-fill-solution}
+ggplot(radios) + 
+  geom_sf(aes(fill = POBLACION)) 
+```
+
+Antes de seguir, probemos usar "color" en lugar de "fill" para mostrar la población. ¿Cual funciona mejor?
+
+Continuemos puliendo el gráfico. Cuando usamos pintamos polígonos para mostrar datos, el grosor de la línea que traza las fronteras a veces hace difícil determinar el color de relleno. Esto suele pasar cuando se muestra información geográfica intrincada como la de los radios censales. Una solución es definir el color de la línea como `NA`, que para `ggplot` significa "ninguno". Como siempre que queremos modificar un atributo estético en forma arbitraria -un valor fijo, que no dependa de los datos- debemos hacerlo por fuera de `aes()`:
+
+
+```{r geom-sf-fill2, exercise=TRUE}
+ggplot(radios) + 
+  geom_sf(aes(fill = POBLACION), ___) 
+```
+
+```{r geom-sf-fill2-hint}
+ggplot(radios) + 
+  geom_sf(aes(fill = POBLACION), color = ___) 
+```
+
+```{r geom-sf-fill2-solution}
+ggplot(radios) + 
+  geom_sf(aes(fill = POBLACION), color = NA) 
+```
+
+Así esta mejor. 
+
+Algo importante que no hemos mencionado aún es la importancia de "normalizar" las variables antes de mostrarlas en un mapa. En general, los lugares más grandes van a contener dentro "más" de cualquier variable que los lugares pequeños (sean personas, comercios o accidentes). Es de esperarse que en el barrio más pequeño de la ciudad vivan menos personas que en el más grande; lo que es útil saber es si los valores son bajo o altos para un área _con esa extensión_. Ejemplos típicos: 
+
+* En lugar de mostrar "número de crímenes por barrio" es más instructivo mostrar el número de crímenes per cápita; de lo contrario es de esperar que los lugares más poblados siempre registren más incidentes, lo cual no agrega demasiada información.  
+* En lugar de mostrar "cantidad de habitantes por radio censal", mostramos la densidad de población, es decir la cantidad de habitantes dividida por la extensión del área. Los mapas de densidad muestran mucho mejor la distribución espacial de la población.
+
+Con nuestros datos, podemos visualizar la densidad de la población mostrando la cantidad de habitantes dividida por la superficie del polígono. O sea, POBLACION / AREA_KM2:
+
+
+```{r geom-sf-fill3, exercise=TRUE}
+ggplot(radios) + 
+  geom_sf(aes(___), color = NA) 
+```
+
+```{r geom-sf-fill3-hint}
+ggplot(radios) + 
+  geom_sf(aes(fill = POBLACION/___), color = ___) 
+```
+
+```{r geom-sf-fill3-solution}
+ggplot(radios) + 
+  geom_sf(aes(fill = POBLACION/AREA_KM2), color = NA) 
+```
+
+Este último gráfico representa de forma mucho mas precisa la distribución de habitantes en la ciudad, haciendo saltar a la vista los núcleos con mayor densidad de población. Pero tenemos una mejora más por realizar: elegir una escala de color que haga más legible el gráfico, ayudando al ojo a diferenciar las áreas donde la densidad es particularmente alta o baja. Apelamos a ["viridis"](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html), una escala diseñada para ser fácil de interpretar... y lucir bien de paso. Para usar virids, agregamos `scale_fill_viridis_d()` cuando se muestra una variable categórica, y `scale_fill_viridis_c() `cuando se trata de una variable continua, nuestro caso en este momento.
+
+¿Cómo queda con la escala viridis?
+
+```{r geom-sf-fill4, exercise=TRUE}
+ggplot() +
+  geom_sf(data = radios, aes(fill = POBLACION/AREA_KM2), color = NA) +
+  ___ 
+```
+
+```{r geom-sf-fill4-hint}
+ggplot() +
+  geom_sf(data = radios, aes(fill = POBLACION/AREA_KM2), color = NA) +
+  scale_fill____
+```
+
+```{r geom-sf-fill4-solution}
+ggplot() +
+  geom_sf(data = radios, aes(fill = POBLACION/AREA_KM2), color = NA) +
+  scale_fill_viridis_c() 
+```
+
+Si vamos a compartir este gráfico, necesitamos agregar un título descriptivo, definir nombres claros para las leyendas, etc. Además, podemos elegir un tema que resulte adecuado para mostrar datos geográficos. Dos opciones disponibles son `theme_minimal()`, que ya hemos probado, y `theme_void()`. Probemos usando uno u otro. ¿Cuál es la diferencia?
+
+```{r geom-sf-fill5, exercise=TRUE}
+ggplot() +
+  geom_sf(data = radios, aes(fill = POBLACION/AREA_KM2), color = NA) +
+  scale_fill_viridis_c() +
+  labs(title = "Ciudad Autónoma de Buenos Aires",
+       subtitle = "Densidad de población",
+       fill = "hab/km2") + 
+  theme___
+```
+
+```{r geom-sf-fill5-solution}
+ggplot() +
+  geom_sf(data = radios, aes(fill = POBLACION/AREA_KM2), color = NA) +
+  scale_fill_viridis_c() +
+  labs(title = "Ciudad Autónoma de Buenos Aires",
+       subtitle = "Densidad de población",
+       fill = "hab/km2") + 
+  theme_void()
+```
+
+
+## Volcando en el mapa múltiples capas de información
+
+En algunos casos, un archivo con información geográfica contiene todos los datos que necesitamos. Pero lo habitual es que el archivo sólo brinde la ubicación y fronteras de nuestras unidades de análisis, de manera que necesitamos agregarle los datos que hemos obtenido de otras fuentes y queremos proyectar en un mapa.
+
+Comentamos al principio de capítulo que los archivos con datos espaciales pueden representar áreas (polígonos), líneas o puntos. Hasta ahora hemos hecho mapas con polígonos, pero según el caso podríamos querer mostrar otros tipos de geometría. 
+
+Un ámbito donde es común utilizar toda la variedad de geometrías es el transporte: Polígonos para representar distritos, líneas para el recorrido de un sistema de transporte, y puntos para la ubicación de las estaciones.
+
+Sumemos a nuestra colección datos espaciales con
+
+* las líneas de transporte subterráneo (SUBTE) de la ciudad
+    
+```{r eval=FALSE}
+subte_lineas <- read_sf("http://bitsandbricks.github.io/data/subte_lineas.geojson")
+```
+
+```{r echo=FALSE}
+subte_lineas
+```
+
+* y los puntos con las ubicaciones de las estaciones de SUBTE
+    
+```{r eval=FALSE}
+subte_estaciones <- read_sf("http://bitsandbricks.github.io/data/subte_estaciones.geojson")
+```
+
+```{r echo=FALSE}
+subte_estaciones
+```
+
+Combinar capas mostrado distintas geometrías es simple. Sólo es cuestión de sumar capas de `geom_sf()` asignando a cada una un dataframe espacial a mostrar con el parámetro "data"; por ejemplo, `data = radios`. Mostremos los radios censales (`data = radios`) y el trazado de las líneas de transporte (`data = lineas`) en el mismo mapa:
+
+```{r geom-sf-multi, exercise=TRUE}
+ggplot() +
+    geom_sf(___) +
+    geom_sf(___) 
+```
+
+```{r geom-sf-multi-hint}
+ggplot() +
+    geom_sf(data = ___) +
+    geom_sf(data = ___) 
+```
+
+```{r geom-sf-multi-solution}
+ggplot() +
+    geom_sf(data = radios) +
+    geom_sf(data = subte_lineas) 
+```
+
+Y del mismo modo, sumemos una capa más para mostrar la ubicación de las estaciones (`data = subte_estaciones`):
+
+```{r geom-sf-multi2, exercise=TRUE}
+ggplot() +
+    geom_sf(data = radios) +
+    geom_sf(data = subte_lineas) +
+    ___ 
+```
+
+```{r geom-sf-multi2-hint}
+ggplot() +
+    geom_sf(data = radios) +
+    geom_sf(data = subte_lineas) +
+    geom_sf(data = ___)
+```
+
+```{r geom-sf-multi2-solution}
+ggplot() +
+    geom_sf(data = radios) +
+    geom_sf(data = subte_lineas) +
+    geom_sf(data = subte_estaciones)
+```
+
+Mostremos cada línea con un color distinto, en base a la variable "LINEA". Y hagamos lo mismo para la capa de estaciones.
+
+```{r geom-sf-multi3, exercise=TRUE}
+ggplot() +
+    geom_sf(data = radios) +
+    geom_sf(data = subte_lineas, ___) +
+    geom_sf(data = subte_estaciones, ___)
+```
+
+```{r geom-sf-multi3-hint}
+ggplot() +
+    geom_sf(data = radios) +
+    geom_sf(data = subte_lineas, aes(color = ___)) +
+    geom_sf(data = subte_estaciones, aes(color = ___))
+```
+
+```{r geom-sf-multi3-solution}
+ggplot() +
+    geom_sf(data = radios) +
+    geom_sf(data = subte_lineas, aes(color = LINEA)) +
+    geom_sf(data = subte_estaciones, aes(color = LINEA))
+```
+
+¡Funciona! Eso si, el gráfico queda bastante recargado por la abundancia de líneas. Podemos mostrar sólo la extensión de la ciudad, sin detalle interno, para resaltar las líneas de transporte. COmo hicmos antes, podemos hacer desaparecer la división entre polígonos usando `color = NA`:
+
+```{r geom-sf-multi4, exercise=TRUE}
+ggplot() +
+    geom_sf(data = radios, ___) +
+    geom_sf(data = subte_lineas, aes(color = LINEA)) +
+    geom_sf(data = subte_estaciones, aes(color = LINEA))
+```
+
+```{r geom-sf-multi4-hint}
+ggplot() +
+    geom_sf(data = radios, color =___) +
+    geom_sf(data = subte_lineas, aes(color = LINEA)) +
+    geom_sf(data = subte_estaciones, aes(color = LINEA))
+```
+
+```{r geom-sf-multi4-solution}
+ggplot() +
+    geom_sf(data = radios, color = NA) +
+    geom_sf(data = subte_lineas, aes(color = LINEA)) +
+    geom_sf(data = subte_estaciones, aes(color = LINEA))
+```
+Pensando en compartir el resultado, nos queda usar `theme_void()` para un tema minimalista sin panel de fondo, y agregar título y demás textos vía `labs()`:
+
+```{r geom-sf-multi5, exercise=TRUE}
+ggplot() +
+  geom_sf(data = radios, color = NA) +
+  geom_sf(data = subte_lineas, aes(color = LINEA)) +
+  geom_sf(data = subte_estaciones, aes(color = LINEA)) +
+  labs(___) +
+  ___
+```
+
+```{r geom-sf-multi5-hint}
+ggplot() +
+  geom_sf(data = radios, color = NA) +
+  geom_sf(data = subte_lineas, aes(color = LINEA)) +
+  geom_sf(data = subte_estaciones, aes(color = LINEA)) +
+  labs(title = ___,
+       subtitle = ___) +
+  theme____
+```
+
+```{r geom-sf-multi5-solution}
+ggplot() +
+  geom_sf(data = radios, color = NA) +
+  geom_sf(data = subte_lineas, aes(color = LINEA)) +
+  geom_sf(data = subte_estaciones, aes(color = LINEA)) +
+  labs(title = "Sistema de transporte subterráneo (SUBTE)",
+       subtitle = "Ciudad Autónoma de Buenos Aires") +
+  theme_void()
+```
+
+Este es un caso que amerita elegir los colores de la paleta de visualización a mano. Esto es porque la identidad de las líneas de SUBTE en Buenos Aires está muy asociada a su color oficial, y por lo tanto resulta confuso verlas representadas en otra gama.
+
+Recurriendo a `scale_color_manual()` como hicimos en una lección anterior, aquí queda el ejercicio resuelto:
+
+
+```{r}
+color_lineas <- c("A" = "cyan", "B" = "red", "C" = "blue",
+                  "D" = "darkgreen", "E" = "purple", "H" = "yellow")
+
+ggplot() +
+  geom_sf(data = radios, color = NA) +
+  geom_sf(data = subte_lineas, aes(color = LINEA)) +
+  geom_sf(data = subte_estaciones, aes(color = LINEA)) +
+  labs(title = "Sistema de transporte subterráneo (SUBTE)",
+       subtitle = "Ciudad Autónoma de Buenos Aires") +
+  theme_void() +
+  scale_color_manual(values = color_lineas)
+```
+
+## Obteniendo cartografía de internet
+
+Hasta ahora hemos mostrado nuestros datos georreferenciados "flotando" sobre espacio vacío. Pero para dar contexto que guíe a la audiencia, muchas veces es útil proyectar la información sobre un mapa de fondo que muestre la posición de caminos, nombres de localidades, accidentes geográficos y otros hitos. Estos mapas usados como capa de fondo sobre la cual mostrar datos espaciales son conocidos como "mapas base", o _basemaps_. Guardar por nuestra cuenta información cartográfica con alto nivel de detalle de cualquier lugar del mundo es impracticable, pero por suerte existen servicios en internet que lo hacen por nosotros, como [Google Maps Platform](https://developers.google.com/maps) (que requiere registro previo y tarjeta de crédito) o [Stamen Maps](http://maps.stamen.com) (¡que es de uso gratuito!)
+
+```{r echo=FALSE, fig.align="center", out.width="85%"}
+knitr::include_graphics('https://bitsandbricks.github.io/img/stamen.png')
+```
+<center>
+El sitio web de Stamen Maps
+
+</center>
+
+Para incluir mapas base en nuestras visualizaciones podemos usar las funciones del paquete [`ggmap`](https://github.com/dkahle/ggmap), que complementa a ggplot agregando funciones que permiten adquirir y visualizar mapas en forma fácil.
+
+Lo activamos:
+
+```{r}
+library(ggmap)
+```
+
+Ahora, para obtener un mapa base del área donde se encuentran los datos que queremos mostrar, necesitamos determinar su “bounding box”: el rango de latitud y longitud que forma un rectángulo conteniendo todas sus posiciones. En resumidas cuentas, se trata de los valores de latitud máxima y mínima, y de longitud máxima y mínima, de nuestros datos georreferenciados.
+
+Los proveedores de mapas online suelen solicitar los valores en este orden: izquierda, abajo, derecha, arriba. Es decir, posición mas al oeste, posición mas al sur, posición mas al este, posición mas al norte. 
+Cuando disponemos de un daataframe georreferenciado, obtener la _bounding box_ de su contenido es bastante fácil usando `st_bbox`, una función del paquete `sf` que recupera esas cuatro coordenadas clave. Por ejemplo `st_bbox(radios)` obtiene las coordenadas del rectángulo de territorio que abarca los radios censales de Buenos Aires. Luego de guardar las coordenadas en una variable, les ponemos los nombres que permitirán que `ggmap` las identifique:
+
+```{r}
+bbox <- st_bbox(radios)
+names(bbox) <- c("left", "bottom", "right", "top")
+```
+
+Ahora si, a por ese mapa base.
+
+Lo descargamos entregando la bounding box del área que nos interesa (que ya hemos guardado en la variable "bbox") y un nivel de zoom. El nivel de zoom -un número de 1 a 20- indica el detalle que tendrá el mapa descargado. Para una ciudad, un zoom de entre 10 y 12 suele alcanzar.
+
+
+```{r get_stamen, exercise=TRUE}
+mimapa <- get_stamenmap(___, zoom = 11)
+```
+
+
+```{r get_stamen-solution}
+mimapa <- get_stamenmap(bbox, zoom = 12)
+```
+
+Para ver el resultado usamos `ggmap()`, pasándole como parámetro el mapa que acabamos de descargar:
+
+```{r show_stamen, exercise=TRUE}
+ggmap(___)
+```
+
+```{r show_stamen-solution}
+ggmap(mimapa)
+```
+Pueden probar el resultado con niveles de zoom más bajos y más altos, pero cuidado al elegir un zoom elevado para un área grande... pueden tener que esperar un rato largo a que termine la descarga de los datos.
+
+
+Stamen ofrece varios estilos de mapa base, que pueden revisarse en su [sitio web](http://maps.stamen.com). Entre ellos: 
+
+- `terrain` (usado por defecto)
+- `toner` (monocromático)
+- `toner-lite` (versión alternativa de toner, de menos contraste visual)
+- `watercolor` (hay que probarlo para apreciarlo, pero digamos que es artístico)
+
+Cuando descargamos un mapa que vamos a usar de base para visualizar datos siempre es una buena idea elegir una opción en escala de grises, sin colores que compitan contra los datos que proyectaremos. 
+
+Probamos entonces descargar una monocromática, pasando una vez mas nuestra bbox y agregamdo el parámetro `maptype = "toner-lite"`:
+
+
+```{r get_stamen_toner_lite, exercise=TRUE}
+mimapa <- get_stamenmap(___, ___, zoom = 11)
+ggmap(mimapa)
+```
+
+```{r get_stamen_toner_lite-hint}
+mimapa <- get_stamenmap(bbox, maptype = ___, zoom = 12)
+```
+
+```{r get_stamen_toner_lite-solution}
+mimapa <- get_stamenmap(bbox, maptype = "toner-lite", zoom = 12)
+ggmap(mimapa)
+```
+
+
+Y por fin, para mostrar nuestros propios datos, como hicimos antes con ggplot... la verdad es que no hay mucho esfuerzo extra! Podemos usar casi el mismo código. Sólo necesitamos recordar dos cosas:
+
+* en vez de comenzar con `ggplot()`, comenzamos la visualización con `ggmap(mimapa)`
+* donde usamos `geom_sf()`, agregamos el parámetro `inherit.aes = FALSE`. 
+
+El segundo punto es necesario por que `ggmap()` usa un sistema particular de coordenadas de referencia, que pueden causar problemas si son distintas a la de los datos geográficos que muestra `geom_sf()`. Al agregar ese parámetro, se le indica a `geom_sf()` que no intente usar ("heredar") las coordenadas de `ggmap()`, y listo. 
+
+A intentarlo:
+
+```{r ggmap_sf, exercise=TRUE}
+___ +
+  geom_sf(data = subte_lineas, aes(color = LINEA), ___) +
+  geom_sf(data = subte_estaciones, aes(color = LINEA), ___) +
+  labs(title = "Sistema de transporte subterráneo (SUBTE)",
+       subtitle = "Ciudad Autónoma de Buenos Aires") +
+  theme_void() +
+  scale_color_manual(values = color_lineas)
+
+```
+
+```{r ggmap_sf-hint}
+___ +
+  geom_sf(data = subte_lineas, aes(color = LINEA), inherit.aes = ___) +
+  geom_sf(data = subte_estaciones, aes(color = LINEA), inherit.aes = ___) +
+  labs(title = "Sistema de transporte subterráneo (SUBTE)",
+       subtitle = "Ciudad Autónoma de Buenos Aires") +
+  theme_void() +
+  scale_color_manual(values = color_lineas)
+
+```
+
+```{r ggmap_sf-solution}
+ggmap(mimapa) +
+  geom_sf(data = subte_lineas, aes(color = LINEA), inherit.aes = FALSE) +
+  geom_sf(data = subte_estaciones, aes(color = LINEA), inherit.aes = FALSE) +
+  labs(title = "Sistema de transporte subterráneo (SUBTE)",
+       subtitle = "Ciudad Autónoma de Buenos Aires") +
+  theme_void() +
+  scale_color_manual(values = color_lineas)
+
+```
+
+En esta ocasion no usamos la capa de radios, como si habíamos visualizado en el ejemplo con `ggplot`. ¿Porqué creen que fue? ¿Cómo mostrarían la capa de radios?
+

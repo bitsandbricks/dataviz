@@ -17,5 +17,8 @@ Suggests:
 Depends: 
     R (>= 2.10)
 Imports: 
+    sf,
     dplyr,
-    ggplot2
+    ggplot2,
+    ggmap
+License: CC BY 4.0

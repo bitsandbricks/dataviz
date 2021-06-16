@@ -7,7 +7,7 @@
 #' \describe{ 
 #'   \item{pais}{país al que corresponde la observación}
 #'   \item{continente}{categoría, continente donde se ubica el país del registro}
-#'   \item{anio}("año") rango de 1952 a 2007 en incrementos de 5 años}
+#'   \item{anio}{("año") rango de 1952 a 2007 en incrementos de 5 años}
 #'   \item{expVida}{expectativa de vida al nacer, en años}
 #'   \item{pop}{población}
 #'   \item{PBIpc}{PBI per capita (USD, ajustados por inflación)}
