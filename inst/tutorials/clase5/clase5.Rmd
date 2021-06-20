@@ -6,56 +6,65 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
-knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(ggplot2)
+delitos <- dataviz::delitos
+
+set.seed("99")
+muestra_de_fechas <- delitos %>% 
+    sample_n(5) %>% 
+    pull(fecha)
+
+
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
 
-## Analizando dinámicas espacio-temporales
+## Trabajando con fechas
 
-Para entender datasets con datos en gran volumen que poseen atributos de posición y tiempo, es útil visualizar el ritmo en el que ocurren (diario, mensual, anual, etc) y la forma en la que se disrtibuyen en el espacio.
+Se hace cada vez más fácil registrar eventos con gran precisión temporal además de espacial y temporal; es decir, datos que incluyen fecha y hora, o coordenadas que los ubican en un sitio determinado. Para entender datasets con datos en gran volumen que poseen atributos de posición y tiempo, es útil visualizar el ritmo en el que ocurren (diario, mensual, anual, etc) y la forma en la que se distribuyen en el espacio.
 
-Para prácticar, trabajaremos con un dataset de delitos registrados en la Ciudad de Buenos Aires. Los datos fueron publicados por el Gobierno de la Ciudad como parte de http://mapa.seguridadciudad.gob.ar/, y luego recopilados en un repositorio descargable disponible en https://github.com/ramadis/delitos-caba.
+Para practicar, trabajaremos con un dataset publicado por la Ciudad Autónoma de Buenos Aires, con delitos registrados durante el 2020. Los datos fueron publicados por en el _Mapa del delito_ de la Ciudad (https://mapa.seguridadciudad.gob.ar/). 
 
 
-```{r cache=TRUE}
-delitos <- read.csv("https://bitsandbricks.github.io/data/crimenydelito.csv", stringsAsFactors = FALSE)
+```{r echo=FALSE, fig.align="center", out.width="85%"}
+knitr::include_graphics('https://live.staticflickr.com/3410/3346781444_48266ac902_b.jpg')
+```
+<center>
+subtipo: "Siniestro Vial"
+
+</center>
+
+Las primeras filas del dataset lucen asi:
+
+
+```{r echo=FALSE}
+head(delitos, 50)
 ```
 
-Chequeamos un resumen del contenido del dataset:
+Teniendo en cuenta que el dataset es del 2020, el Primer Año de la Pandemia, nos podríamos preguntar si se ve algún descenso brusco en robos, hurtos, homicidios o siniestros viales con el inicio de la cuarentena. Para responder eso, vamos a tener que lidiar con datos de tipo "fecha". Esto podría ser bastante engorroso, pero por suerte podemos usar una herramienta que simplifica las cosas.
+
+
+### La fecha como clase de variable
+
+La fecha es un tipo de dato que puede ser expresado de muchas maneras, dependiendo de que nos interese tener en cuenta: el día de la semana al que corresponde, el mes, el año, etc. El paquete [`lubridate`](https://lubridate.tidyverse.org/) hace fácil tomar una variable que contiene fechas en cualquier formato (por ejemplo "20/07/2020") para extraer el atributo relacionado que deseemos (como su día, "lunes", o su mes, "julio").
+
+Para empezar, convertimos el campo "fecha" al tipo de dato especializado, que se llama... fecha (_date_). Aquí tenemos que prestar atención al formato en que aparecen los datos de la columna, en general algo como "2018-07-21" (mes, día y año) o "2018-07-21 12:14:24" (mes, día, año y hora, minutos, segundos). Con nuestros datos se da el primer caso, por lo cual la función para convertir ese campo en fecha es `ymd()`; para el segundo caso, seria `ymd_hms()`
 
 ```{r}
-summary(delitos)
-```
-
-Mirando el resumen nos enteramos de que la hora más habitual para un delito son las 8 de la noche, que el delito más frecuente es el hurto sin violencia, y que el lugar más habitual donde ocurren los incidentes es en la vía pública, entre otras cosas.
-
-### Trabajando con fechas
-
-La fecha es un tipo de dato que puede ser expresado de muchas maneras, dependiendo de que nos interese tener en cuenta: el día de la semana al que corresponde, el mes, el año, etc. El paquete `lubridate` hace fácil extraer fechas en cualquier formato (por ejemplo "20/07/2018") o el atributo relacionado que deseemos (como "viernes" o "Julio").
-
-Para empezar, convertimos el campo "fecha" al tipo de dato especializado que se llama... fecha (_date_). Aquí tenemos que prestar atención al formato en que aparecen, en general algo como "2018-07-21" (mes, día y año) o "2018-07-21 12:14:24" (mes, día, año y hora, minutos, segundos). Con nuestros datos se da el primer caso, por lo cual la función para convertir ese campo en fecha es `ymd()`; para el segundo caso, seria `ymd_hms()`
-
-```{r}
-library(tidyverse)
 library(lubridate)
 
-delitos <- delitos %>% mutate(fecha = ymd(fecha))
+delitos$fecha <- ymd(delitos$fecha)
 ```
 
 
 Repasemos algunas de los nuevos trucos que podemos hacer con el tiempo. Tomemos cinco fechas elegidas al azar:
 
 ```{r}
-set.seed("99")
-muestra_de_fechas <- delitos %>% 
-    mutate(fecha_hora = paste(fecha, hora)) %>% 
-    sample_n(5) %>% 
-    pull(fecha_hora)
-
 muestra_de_fechas
 ```
 
-Mediante las funciones diponibles en `lubridate`, podemos extraer:
+Mediante las funciones disponibles en `lubridate`, podemos extraer:
 
 - El día de la semana al que corresponde cada fecha:
 
@@ -86,177 +95,98 @@ year(muestra_de_fechas)
 
 Y varias opciones más, que se pueden repasar en https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html
 
-
 Con lo visto hasta aquí, tenemos suficiente para mostrar patrones temporales en los datos.
 
-Delitos registrados por año:
+Empecemos por un gráfico de barras (`geom_bar()`)con la cantidad de eventos registrados por mes. Para que aparezca un conteo por mes del año, asignaremos al eje de las $x$ el _mes_ al que corresponde cada valor de la columna "fecha", o sea `month(fecha, label = TRUE)`:
 
-```{r }
-options(scipen = 20)
 
+```{r barras_mes, exercise=TRUE}
+ggplot(radios) +
+  geom____(___)
+```
+
+```{r barras_mes-hint}
 ggplot(delitos) + 
-    geom_bar(aes(x = year(fecha)))
+    geom_bar(aes(x = month(___)))
+```
+
+```{r barras_mes-solution}
+ggplot(delitos) + 
+    geom_bar(aes(x = month(fecha, label = TRUE)))
 
 ```
 
-Los resultados no permiten comparar entre años, ya que el dataset tiene apenas un puñado de registros en el 2015, y sólo llega a mediados del 2017. Lección: quedémonos sólo con el 2016 y miremos dentro.
+(Usamos el parámetro `label = TRUE` para obtener el nombre del mes en lugar de su número -"dic" en lugar de 12. Prueben realizar el gráfico sin ese parámetro en la llamada a `month()` para ver que pasa.)
 
-```{r}
-delitos %>% 
-    filter(year(fecha) == 2016) %>% 
-    ggplot() +
-        geom_bar(aes(x = month(fecha, label = TRUE)))
+En el gráfico, se ve una reducción drástica a partir de la cuarentena decretada en abril. Y también un incremento gradual y sostenido a partir de allí, que de todos modos no llega a los niveles pre-pandemia de enero y febrero. 
+
+Para ver la composición interna de los conteos mensuales, cuantos casos corresponden a cada categoría, podemos hacer un gráfico de "barras apiladas" como vimos en la clase 3. La sintaxis es igual que antes, pero esta vez asignamos la variable _tipo_"_ al color de relleno de las barras determinado por el parámetro `fill`. 
+
+```{r barras_mes2, exercise=TRUE}
+ggplot(delitos) + 
+    geom_bar(aes(x = month(fecha, label = TRUE), ___))
 ```
 
-Se ve bastante parejo! Quizás haya que examinar los delitos por tipo, para ver si hay algunos que muestran altibajos según la estación. Veamos el top 5 de delitos por frecuencia.
-
-```{r}
-delitos %>% 
-    count(tipo_delito) %>% 
-    top_n(5) %>% 
-    arrange(desc(n))
+```{r barras_mes2-hint}
+ggplot(delitos) + 
+    geom_bar(aes(x = month(fecha, label = TRUE), fill = ___))
 ```
 
-Luce razonable. Guardamos la lista de delitos más frecuentes para referenciar luego.
-
-```{r}
-delitos_frecuentes <- delitos %>% 
-    count(tipo_delito) %>% 
-    top_n(5) %>% 
-    pull(tipo_delito)
+```{r barras_mes2-solution}
+ggplot(delitos) + 
+    geom_bar(aes(x = month(fecha, label = TRUE), fill = tipo))
 ```
 
-Y ahora los comparamos. En gráfico de barras "apilado":
+Las barras apiladas son prolijas, pero pueden hacer difícil evaluar la evolución de categorías individuales. Recordemos que para mostrar los subconjuntos en barras independientes, una al lado de la otra, podemos usar el parámetro `position = "dodge"`. Inténtenlo agregando el parámetro al ejercicio anterior para ver como queda.
 
-```{r}
-delitos %>% 
-    filter(year(fecha) == 2016,
-           tipo_delito %in% delitos_frecuentes) %>% 
-    ggplot() +
-        geom_bar(aes(x = month(fecha, label = TRUE), fill = tipo_delito))
+Ahora comparemos la cantidad de eventos registrados, por tipo, para cada día de la semana. Basta con usar la función que extrae el día de la semana, `wday()`, en lugar de `month()`. Lo demás es idéntico, incluyendo el uso de `label = TRUE` para que obtener el nombre del día -"lun"-, en lugar de su posición en la semana -"2", porque para `lubridate` las semanas empiezan el domingo-. 
+
+```{r barras_dia, exercise=TRUE}
+ggplot(delitos) + 
+    geom_bar(aes(x = ___(fecha, label = TRUE), fill = tipo))
 ```
 
-... y sin apilar
-
-```{r}
-delitos %>% 
-    filter(year(fecha) == 2016,
-           tipo_delito %in% delitos_frecuentes) %>% 
-    ggplot() +
-        geom_bar(aes(x = month(fecha, label = TRUE), fill = tipo_delito),
-                 position = "dodge")
+```{r barras_dia-solution}
+ggplot(delitos) + 
+    geom_bar(aes(x = wday(fecha, label = TRUE), fill = tipo))
 ```
 
-O como líneas:
+Como era de esperar, durante los fines de semana se observa una menor cantidad de eventos, aunque quizás no en la categoría Homicidio, que es difícil de discernir por su relativa escasez. Para solucionar el problema podríamos filtrar los datos antes de visualizarlos, como hemos hecho antes con la función `filter()`, mostrando sólo la categoría de interés. 
 
-```{r}
-# Primero realizamos un conteo de delitos por tipo y por mes del año
-conteo <-  delitos %>% 
-    filter(year(fecha) == 2016,
-           tipo_delito %in% delitos_frecuentes) %>% 
-    count(tipo_delito, mes = month(fecha, label = TRUE))
-   
-# Y ahora a mostras las cantidades mensuales como líneas 
-ggplot(conteo) +
-    geom_line(aes(x = mes, y = n, group = tipo_delito, color = tipo_delito))
+Otra opción, que probaremos ahora, es una visualización en "facetas". Se trata de generar una visualización que muestra distintos aspectos de los datos en paneles separados. Con un ejemplo vamos a dejarlo mas claro. Para realizar un gráfico en facetas, basta con sumar una línea con la función `facet_wrap(vars(x, y, ...))`, dónde "x", "y", etc son los nombres de las variables cuyas categorías recibirán paneles distintos. Intentémoslo con el último gráfico, agregando "tipo" como variable a facetar:
+
+```{r barras_dia_facet, exercise=TRUE}
+ggplot(delitos) + 
+    geom_bar(aes(x = wday(fecha, label = TRUE), fill = tipo)) +
+    facet_wrap(vars(___))
 ```
 
-Ésta última opción es sin dudas la más clara, tanto para mostrar la diferencia relativa en el volumen de incidentes, como para indicar si existen fluctuaciones. 
+```{r barras_dia_facet-solution}
+ggplot(delitos) + 
+    geom_bar(aes(x = wday(fecha, label = TRUE), fill = tipo)) +
+    facet_wrap(vars(tipo))
+```
+Obtuvimos barras separadas, pero los homicidios siguen difíciles de distinguir. Se debe a que por defecto `facet_wrap()` mantiene a escala todos los paneles, de manera que se puedan comparar cantidades de forma directa. La desventaja es que se pierde legibilidad de categorías con valores ínfimos en comparación con otras. Por eso disponemos del parámetro `scales`, que permite graficar los datos con escala libre, vía `scales = "free"`. Probemos:
 
-Intentémoslo otra vez, ahora con el día de la semana:
 
-```{r}
-# Primero realizamos un conteo de delitos por tipo y por día de la semana
-conteo <-  delitos %>% 
-    filter(year(fecha) == 2016,
-           tipo_delito %in% delitos_frecuentes) %>% 
-    count(tipo_delito, diasemana = wday(fecha, label = TRUE))
-   
-# Y ahora a mostras las cantidades mensuales como líneas 
-ggplot(conteo) +
-    geom_line(aes(x = diasemana, y = n, group = tipo_delito, color = tipo_delito))
-
+```{r barras_dia_facet2, exercise=TRUE}
+ggplot(delitos) + 
+    geom_bar(aes(x = wday(fecha, label = TRUE), fill = tipo)) +
+    facet_wrap(vars(___), scales = ___)
 ```
 
-Como algunas categorías están mucho menos representadas, quedan "aplastadas" en el gráfico con lo que se dificulta su legibilidad. Vamos a comparar porcentajes en lugar de valores absolutos.
-
-```{r}
-conteo <-  conteo  %>% 
-    group_by(tipo_delito) %>% 
-    mutate(pct = n / sum(n) * 100)
-
-ggplot(conteo) +
-    geom_line(aes(x = diasemana, y = pct, group = tipo_delito, color = tipo_delito))
-
+```{r barras_dia_facet2-solution}
+ggplot(delitos) + 
+    geom_bar(aes(x = wday(fecha, label = TRUE), fill = tipo)) +
+    facet_wrap(vars(tipo), scales = "free")
 ```
+Ahora queda más claro que los homicidios siguen un patrón diario distinto al de las demás categorías. También que, en términos relativos, las lesiones son las que mas se reducen durante los fines de semana.
 
-La diferencia de volumen según el día parece drástica, pero es engañosa: el eje de las $y$ no empieza en 0, lo cual hace que las diferencias se perciban mayores de lo que son. Forzamos al gráfico a comenzar desde 0 el eje $y$:
-
-```{r}
-ggplot(conteo) +
-    geom_line(aes(x = diasemana, y = pct, group = tipo_delito, color = tipo_delito))+
-    expand_limits(y = 0)
-```
-
-
-Sin dudas, los domingos son el día en que el delito descansa un poco... excepto pra quienes deciden llevarse un auto o al menos una rueda ajena. El pico de delitos reportados ocurre los viernes, con la excepción del hurto de rueda, que crece de domingo a miércoles y luego decae.
-
-Recordando que los homicidios suelen tener un contexto muy distinto al de los robos, agreguemos la categoría "Homicidio Doloso" para comparar con las demás.
-
-```{r}
-conteo_homicidios <-  delitos %>% 
-    filter(year(fecha) == 2016,
-           tipo_delito == "Homicidio Doloso") %>% 
-    count(tipo_delito, diasemana = wday(fecha, label = TRUE)) %>%
-    group_by(tipo_delito) %>% 
-    mutate(pct = n / sum(n) *100)
-
-```
-
-Sumamos la nueva categoría:
-
-```{r}
-ggplot(conteo) +
-    geom_line(aes(x = diasemana, y = pct, group = tipo_delito, color = tipo_delito)) +
-    geom_line(data = conteo_homicidios,
-              aes(x = diasemana, y = pct, group = tipo_delito)) +
-    labs(title = "Distribución diaria por tipo de delito",
-         subtitle = "La línea negra representa homicidios",
-         x = "día", y = "%",
-         color = "Delitos más frecuentes") +
-    expand_limits(y = 0)
-
-```
-
-La categoría homicidio muestra un ritmo inverso al de los otros delitos: es más frecuente durante el fin de semana, decayendo en los días hábiles.
-
-
-También podemos evaluar el ritmo según la hora del día. Para ello necesitamos pasar a formato temporal la columna "hora", que en éste dataset tiene el formato "hh:mm:ss" (por ejemplo, "14:55:00"). La función correspondiente para interpretar ese formato es `hms()`. Usamos una combinacion de `hms()` para interpretar el texto en "hora" como una variable de tipo tiempo, y `hour()` para extraer la hora base -por ejemplo, para "19:55:00" la hora base es 19.
-
-```{r}
-por_hora <-  delitos %>% 
-    filter(year(fecha) == 2016,
-           tipo_delito %in% delitos_frecuentes) %>% 
-    count(tipo_delito, hora_base = hour(hms(hora))) %>%
-    group_by(tipo_delito) %>% 
-    mutate(pct = n / sum(n) *100)
-```
-
-```{r}
-ggplot(por_hora) +
-    geom_line(aes(x = hora_base, y = pct, group = tipo_delito, color = tipo_delito)) +
-    labs(title = "Distribución horaria por tipo de delito",
-         x = "hora", y = "%",
-         color = "Delitos más frecuentes") +
-    expand_limits(y = 0) +
-    scale_x_continuous(breaks = 0:23)
-```
-
-Para los delitos relacionados con automóviles, el "prime time" es como el de la TV, de 20 a 22. Los robos violentos tienen su apogeo durante las 20. Las lesiones viales comparten su hora pico con el tráfico.  Los hurtos tienen su momento cúlmine a la hora del almuerzo, y a la de salida de la oficina.
+También podemos evaluar el ritmo según la hora del día. ¿Cómo se haría con nuestro dataset? 
 
 ## Mirando al espacio
 
-Pasemos ahora al análisis espacial de nuestros datos. Para facilitar la visualización vamos a usar el paquete `ggmap`, que incluye varias funciones que facilitan la creación de mapas.
+Pasemos ahora al análisis espacial de nuestros datos. Para facilitar la visualización volveremos a usar el paquete `ggmap`, que aporta funciones que facilitan la creación de mapas.
 
 ```{r}
 library(ggmap)
@@ -264,16 +194,11 @@ library(ggmap)
 
 ### Obteniendo un mapa base
 
-Para obtener un mapa de fondo o "mapa base" necesitamos obtener una "bounding box" de nuestros datos, que luego pasamos a `get_stamenmap()`, como ya hicimos en el capítulo anterior cuando mapeamos _tweets_.
+Como vimos en la clase previa, para obtener un mapa de fondo o "mapa base" necesitamos obtener una _bounding box_ de nuestros datos, que luego pasamos a `get_stamenmap()`.
 
-Como suele ocurrir, hace falta un poco de limpieza previa: nos quedamos solo con los puntos ubicados en el hemisferio donde se ubica Buenos Aires, y con eso eliminamos algunos puntos mal localizados.
+La diferencia con nuestra experiencia anterior es que antes trabajamos con dataframes espaciales, que contenían geometrías georreferencias: polígonos, líneas, puntos. Pero este dataframe no tiene nada de eso. La buena noticia es que igual podemos hacer mapas, porque contiene dos columnas clave para ello: las de "longitud" y "latitud", que permiten ubicar puntos sobre la faz de la tierra. Y de puntos se trata, porque en general sólo podremos trabajar con columnas de coordenadas cuando los datos espaciales representen puntos, pero no líneas y polígonos. Estas geoemtrías de mayor complejidad se manejan de forma cómodo usando dataframes espaciales como los que exploramos en la clase anterior.
 
-```{r}
-delitos <- delitos %>% 
-    filter(latitud <0, longitud <0)
-```
-
-Con los datos depurados, usamos la funcion `make_bbox()` que nos devuelve el rectángulo de coordenadas que contiene todas las ubicaciones en nuestra base:
+Así como contamos con `st_bbox()` para obtener la _bounding box_ de dataframes espaciales, cuando tenemos las coordenadas en un par de columnas recurrimos a `make_bbox()`,:
 
 ```{r}
 bbox <- make_bbox(delitos$longitud, delitos$latitud)
@@ -281,7 +206,7 @@ bbox <- make_bbox(delitos$longitud, delitos$latitud)
 bbox
 ```
 
-Y en base a la "bounding box" solicitamos nuestro mapa base:
+En base a la "bounding box" solicitamos nuestro mapa base:
 
 ```{r}
 CABA <- get_stamenmap(bbox = bbox, maptype = "toner-lite", zoom = 12)
@@ -289,7 +214,7 @@ CABA <- get_stamenmap(bbox = bbox, maptype = "toner-lite", zoom = 12)
 
 Para verlo:
 
-```{r dpi=150}
+```{r}
 ggmap(CABA)
 ```
 
@@ -297,133 +222,262 @@ ggmap(CABA)
 
 De aquí en más podemos suporponer nuestros datos en distintas capas, con la misma sintaxis que conocemos de ggplot. Para mapear las ubicaciones de los delitos en el dataset, usamos `geom_point()` y los campos de longitud y latitud para los ejes $x$ e $y$:
 
-```{r dpi=150}
+```{r mapa1, exercise = TRUE}
+ggmap(CABA) +
+    geom____(data = delitos, aes(___))
+```
+
+```{r mapa1-hint}
+ggmap(CABA) +
+    geom_point(data = delitos, aes(x = ___, y = ___))
+```
+
+
+```{r mapa1-solution}
 ggmap(CABA) +
     geom_point(data = delitos, aes(x = longitud, y = latitud))
 ```
 
-Aquí nos topamos con un problema, habitual al trabajar con grandes volúmenes de datos. Hay tantos puntos proyectados sobre el mapa, que se hace imposible interepretar donde existen más o menos. Hacemos algunos ajustes: un color más llamativo, un tamaño de punto más pequeño, y aplicación de una ligera transparencia, vía los atributos "color", "size" y "alpha". ¿Cuál es el valor ideal para cada uno? En general, no queda otra que recurrir a la prueba y error para encontrar la receta justa.
 
-```{r dpi=150}
+Aquí nos topamos con un problema habitual al trabajar con grandes volúmenes de datos. Hay tantos puntos proyectados sobre el mapa, que se hace imposible interpretar dónde existen más o menos. Hacemos algunos ajustes: 
+- un color que resalte más contra el mapa base, y que no se confunda con él
+- un tamaño de punto más pequeño
+-y aplicación de una ligera transparencia
+
+Todo ello vía los atributos "color", "size" y "alpha". ¿Cuál es el valor ideal para cada uno? En general, no queda otra que recurrir a la prueba y error para encontrar la receta justa. Probemos con `color = "orange"`, `size = 0.1` y `alpha = 0.1`:
+
+```{r mapa2, exercise = TRUE}
+ggmap(CABA) +
+    geom_point(data = delitos, aes(x = longitud, y = latitud),
+               ___)
+```
+
+```{r mapa2-hint}
+ggmap(CABA) +
+    geom_point(data = delitos, aes(x = longitud, y = latitud),
+               color = ___, size = ___, alpha = ___)
+```
+
+```{r mapa2-solution}
 ggmap(CABA) +
     geom_point(data = delitos, aes(x = longitud, y = latitud),
                color = "orange", size = 0.1, alpha = 0.1)
 ```
 
-Ahora si aparecen ciertos patrones, por ejemplo la afinidad del delito con las grandes vías de circulación de la ciudad. Aún así, se hace dificil identificar de un golpe de vsta las "zonas calientes", los puntos de máxima concentración. 
+Ahora si aparecen ciertos patrones, por ejemplo la mayor frecuencia de casos de casos cerca de las principales de circulación de la ciudad. Aún así, se hace difícil identificar de un golpe de vista las "zonas calientes", los puntos de máxima concentración. 
 
 ### Mapas de densidad
 
-Una solución práctica para el problema de la cantidad de puntos es una técnica llamada "binning": dividir el espacio en una grilla de celdas, contar cuantos puntos caen dentro de cada una, y visualizar las cantidades agregadas. Hacerlo es muy fácil vía `geom_bind2d()`.
+Una solución práctica para el problema de la cantidad de puntos es una técnica llamada "binning": dividir el espacio en una grilla de celdas, contar cuantos puntos caen dentro de cada una, y visualizar las cantidades agregadas. En el mundo `ggplot` esto se lleva a cabo con `geom_bind2d()`.
 
-```{r dpi=150}
+```{r binning, exercise = TRUE}
 ggmap(CABA) +
-    geom_bin2d(data = delitos, 
-               aes(x = longitud, y = latitud))
+    ___(data = delitos, aes(x = longitud, y = latitud))
 ```
 
-Ahora si, resaltan las áreas de mayor concentración de incidentes. Se puede mejorar un poco el gráfico usando una mayor cantidad de celdas para aumentar la resolución. También empleando una escala de colores diseñada para ayudar a detectar diferencias por tonalidad, como viridis.
+```{r binning-solution}
+ggmap(CABA) +
+    geom_bin2d(data = delitos, aes(x = longitud, y = latitud))
+```
 
-```{r dpi=150}
+Ahora si, resaltan las áreas de mayor concentración de incidentes. Se puede mejorar un poco el gráfico usando:
+
+- una mayor cantidad de celdas para aumentar la resolución
+- una escala de colores diseñada para ayudar a detectar diferencias por tonalidad, como Viridis.
+
+la cantidad de celdas se define con el parámetro "bins", por ejemplo `bins = 100`. La escala de color Viridis, como ya habíamos visto, se agrega sumando una llamada a `scale_fill_viridis_c()` -porque aquí la data es continua, si fuera discreta usaríamos `scale_fill_viridis_d()`.
+
+```{r binning2, exercise = TRUE}
+ggmap(CABA) +
+    geom_bin2d(data = delitos, aes(x = longitud, y = latitud), ___) +
+    ___
+```
+
+```{r binning2-hint}
+ggmap(CABA) +
+    geom_bin2d(data = delitos, aes(x = longitud, y = latitud), bins = ___) +
+    scale_fill_viridis_c()
+```
+
+```{r binning2-solution}
 ggmap(CABA) +
     geom_bin2d(data = delitos, aes(x = longitud, y = latitud), bins = 100) +
     scale_fill_viridis_c()
 ```
 
-Una alternativa al _binning_ es la llamada _kernel density estimation_, muy utilizada en aplicaciones GIS para estimar la intensidad de una determinada variable en cualquier punto del área analizada, incluso en aquellos donde no hay observaciones. La idea es asumir que los valores observados corresponden a una distribución continua sobre el espacio, y determinar cual es la más probable en base a los puntos con datos. No hace falta realizar ningún cálculo matemático, sólo usar `geom_density2d` así:
 
-```{r dpi=150}
+Una alternativa al _binning_ es la llamada _kernel density estimation_, muy utilizada en aplicaciones de análisis espacial para estimar la intensidad de una determinada variable en cualquier punto del área analizada, incluso en aquellos para los cuales no hay observaciones. La idea es asumir que los valores observados corresponden a una distribución continua sobre el espacio, y determinar cual es la más probable en base a los puntos donde existen datos. Podemos visualizar esta distribución estimada `geom_density2d_filled` así:
+
+```{r density, exercise = TRUE}
 ggmap(CABA) +
-    geom_density2d(data = delitos, aes(x = longitud, y = latitud, color = stat(level))) +
-    scale_color_viridis_c()
+    ___(data = delitos, aes(x = longitud, y = latitud), alpha = 0.5) 
 ```
+
+```{r density-solution}
+ggmap(CABA) +
+    geom_density2d_filled(data = delitos, aes(x = longitud, y = latitud), alpha = 0.5) 
+```
+Nótese que aplicamos transparencia usando el parámetro `alpha = 0.5`. ¿Por qué? ¿Qué pasa si lo quitamos?
+
 
 ### Visualizando multiples categorías
 
-Hasta aquí hemos analizado la distribución espacial del delito en su totalidad, sin diferenciar su tipo. Veamos ahora las diferencias por categoría. Podemos reintentar el mapa de puntos, esta vez filtrando los tipos de delito para incluir sólo los más frecuentes, y diferenciándolos por color.
+Hasta aquí hemos analizado la distribución espacial de eventos en su totalidad, sin diferenciar su tipo. Veamos ahora las diferencias por categoría. Podemos reintentar el mapa de puntos, esta vez diferenciándolos por color. Recuperamos el código que usamos antes para mostrar puntos, y esta vez asignamos la columna "tipo" al atributo estético `color`:
 
-```{r dpi=150}
+```{r mapa_categorias, exercise = TRUE}
 ggmap(CABA) +
-    geom_point(data = filter(delitos, tipo_delito %in% delitos_frecuentes), 
-               aes(x = longitud, y = latitud, color = tipo_delito),
+    geom_point(data = delitos, 
+               aes(x = longitud, y = latitud, ___),
                size = 0.1, alpha = 0.1)
 ```
 
+```{r mapa_categorias-hint}
+ggmap(CABA) +
+    geom_point(data = delitos, 
+               aes(x = longitud, y = latitud, color = ___),
+               size = 0.1, alpha = 0.1)
+```
+
+```{r mapa_categorias-solution}
+ggmap(CABA) +
+    geom_point(data = delitos, 
+               aes(x = longitud, y = latitud, color = tipo),
+               size = 0.1, alpha = 0.1)
+```
+
+
 Aquí tenemos dos problemas: 
 
-* La leyenda ("tipo_delito") es difícil de leer, dado que muestra los puntos tal como los definimos: pequeños y con mucha transparencia. Esos atributos son útiles en el mapa, donde tenemos cientos de miles de puntos, pero muy poco prácticos para la leyenda, donde sólo hay uno por etiqueta.
+* La leyenda ("tipo_delito") es difícil de leer, dado que muestra los puntos tal como los definimos: pequeños y con mucha transparencia. Esos atributos son útiles en el mapa, donde tenemos cientos de miles de puntos, pero muy poco prácticos para la leyenda, donde sólo hay un minúsculo punto por etiqueta.
 
-* Los puntos sobre el mapa se superponen en tal medida que es dificil discernir patrones espaciales distintos según su categoría.
+* Los puntos sobre el mapa se superponen en tal medida que es difícil identificar patrones espaciales distintos según su categoría.
 
 El primer problema se resuelve fijando "a mano" los atributos de la leyenda, asi:
 
-```{r dpi=150}
+```{r}
 ggmap(CABA) +
-    geom_point(data = filter(delitos, tipo_delito %in% delitos_frecuentes), 
-               aes(x = longitud, y = latitud, color = tipo_delito),
+    geom_point(data = delitos,
+               aes(x = longitud, y = latitud, color = tipo),
                size = 0.1, alpha = 0.1) +
-    guides(color = guide_legend(override.aes = list(size=2, alpha = 1))) +
-    scale_color_brewer(palette = "Set1")
+    guides(color = guide_legend(override.aes = list(size = 1, alpha = 1)))
 ```
 
 El segundo, usando facetado para mostrar en su propio mapa a cada categoría:
 
-```{r dpi=150}
+```{r}
 ggmap(CABA) +
-    geom_point(data = filter(delitos, tipo_delito %in% delitos_frecuentes), 
-               aes(x = longitud, y = latitud, color = tipo_delito),
+    geom_point(data = delitos,
+               aes(x = longitud, y = latitud, color = tipo),
                size = 0.1, alpha = 0.1) +
-    scale_color_brewer(palette = "Set1") +
-    facet_wrap(~tipo_delito)
+    guides(color = guide_legend(override.aes = list(size = 1, alpha = 1))) +
+    facet_wrap(vars(tipo))
 ```
 
-El facetado ayuda. Se hace evidente, por ejemplo, que el patrón espacial de las lesiones en seguridad vial es muy distinto al de hurto automotor.
+El facetado ayuda a que no se nos mezclen los colores, y hace evidente cuales categorías son mas frecuentes que otras. Pero  con nuestra abundancia de puntos no ayuda encontrar los sitios de alta concentración, y hace que se pierdan de vista los casos de la categoría poco frecuente (homicidios).
 
-Para hacer las diferencias aún mas nítidas, podemos facetar una estimación de densidad:
+Para hacer las diferencias aún mas nítidas, podemos facetar una estimación de densidad en lugar de puntos. ¿Cómo lo haríamos?
 
-```{r dpi=150}
+```{r facetado_densidad, exercise = TRUE}
 ggmap(CABA) +
-    geom_density2d(data = filter(delitos, tipo_delito %in% delitos_frecuentes), aes(x = longitud, y = latitud, color = stat(level))) +
-    scale_color_viridis_c() +
-    facet_wrap(~tipo_delito)
+    ___(data = delitos, aes(x = longitud, y = latitud), alpha = 0.5) +
+    facet_wrap(vars(tipo))
 ```
 
+```{r facetado_densidad-solution}
+ggmap(CABA) +
+    geom_density2d_filled(data = delitos, aes(x = longitud, y = latitud), alpha = 0.5) +
+    facet_wrap(vars(tipo))
+```
 
 ## Combinando espacio y tiempo
 
 
 El facetado también nos permite visualizar el cambio de posición a través del tiempo.
 
-Por ejemplo, podemos comparar dos tipos de delito (hurto sin violencia y hurto de rueda) mostrando dónde ocurren en cada día de la semana.
+Por ejemplo, podemos comparar cierto tipo delito (hurto sin violencia) mostrando dónde ocurre en cada día de la semana.
 
-```{r dpi=150}
-delitos <- delitos %>% 
-    mutate(dia_semana = wday(fecha, label = TRUE))
+Primero activamos el paquete `dplyr` para acceder a su función de filtrado de datos,
 
+```{r}
+library(dplyr)
+```
+
+Y luego mostramos sólo las filas del dataframe donde la columna tipo contiene "Homicidio", 
+ - en forma de puntos en el mapa (`geom_point()`), 
+ - con el "subtipo" de homicidio representado por el `color` de los puntos
+ - y un facetado por día de la semana (`facet_wrap(vars(wday(fecha, label = TRUE)))`)
+
+
+```{r homicidios_por_dia, exercise = TRUE}
 ggmap(CABA) +
-    geom_point(data = filter(delitos, 
-                             tipo_delito %in% c("Hurto (Sin violencia)", "Hurto De Rueda")),
-               aes(x = longitud, y = latitud, color = tipo_delito), alpha = .5, size = .2) +
-    facet_wrap(~dia_semana)
+    ___(data = filter(delitos, ___),
+               aes(x = longitud, y = latitud, ___), alpha = .5) +
+    ___(vars(wday(fecha, label = TRUE)))
 
 ```
 
-O concentrarnos en un tipo de delito en particular, y evaluar en que zonas se concentra de acuerdo a la hora del día:
-
-```{r dpi=150}
-delitos <- delitos %>% 
-    mutate(hora_base = hour(hms(hora)))
-
+```{r homicidios_por_dia-hint}
 ggmap(CABA) +
-    geom_density2d(data = filter(delitos, 
-                                 tipo_delito == "Hurto (Sin violencia)",
-                                 !(wday(fecha) %in% 2:5) ),
-                   aes(x = longitud, 
-                       y = latitud, 
-                       color = stat(level))) +
-    scale_color_viridis_c() +
-    facet_wrap(~hora_base, nrow = 4) +
-    labs(title = "Concentración espacial de hurtos",
-         subtitle = "según hora del día")
+    geom_point(data = filter(delitos, tipo == ___),
+               aes(x = longitud, y = latitud, color = ___), alpha = .5) +
+    facet_wrap(vars(wday(fecha, label = TRUE)))
+
+```
+
+```{r homicidios_por_dia-solution}
+ggmap(CABA) +
+    geom_point(data = filter(delitos, tipo == "Homicidio"),
+               aes(x = longitud, y = latitud, color = subtipo), alpha = .5) +
+    facet_wrap(vars(wday(fecha, label = TRUE)))
+
+```
+Vale aclarar que el poco elegante `facet_wrap(vars(wday(fecha, label = TRUE)))` podría cambiarse por un más legible `facet_wrap(vars(dia_semana))` si como paso previo agregamos al dataframe la columna "dia_semana", guardando allí el valor obtenido con `wday()`. 
+
+Volviendo al tiempo y el espacio, también podemos concentrarnos en un tipo de delito en particular, y evaluar en que zonas se concentra de acuerdo a la hora del día. Nuestra data ya tiene la hora del día declarada en una columna, "franja". Si no fuera así, y tuviéramos la hora como parte de la fecha (estilo "2020-09-18 14:00:00") podríamos obtenerla con ayuda de `hour()` que funciona de forma similar a las ya vistas `month()` y `wday()`.
+
+Entonces, mostremos sólo las filas del dataframe donde la columna tipo contiene "Hurto (sin violencia)", 
+ - en forma de mapa de densidad (`geom_density2d_filled()`), 
+ - y un facetado por hora del día (`facet_wrap(vars(franja))`)
+
+
+```{r hurtos_por_hora, exercise = TRUE}
+ggmap(CABA) +
+    ___(data = filter(delitos, ___),
+               aes(x = longitud, y = latitud), alpha = .5) +
+    ___
+```
+
+```{r hurtos_por_hora-hint}
+ggmap(CABA) +
+    geom_density2d_filled(data = filter(delitos, tipo == ___),
+               aes(x = longitud, y = latitud), alpha = .5) +
+    facet_wrap(___)
+```
+
+```{r hurtos_por_hora-solution}
+ggmap(CABA) +
+    geom_density2d_filled(data = filter(delitos, tipo == "Hurto (sin violencia)"),
+               aes(x = longitud, y = latitud), alpha = .5) +
+    facet_wrap(vars(franja))
+```
+En el resultado se puede ver como los hurtos se concentran nítidamente en las áreas de mayor actividad comercial durante el día (lo que los porteños llaman "el centro"), sobre todo desde el mediodía hasta 4 o 5 de la tarde, cuando pierde intensidad y se dispersa en la dirección de las principales avenidas de la ciudad. 
+
+Para terminar, pulimos la visualización 
+ - filtrando las filas que registran la franja horaria como desconocida (`!is.na(franja)`)
+ - retirando la leyenda, ya que nos interesa mostrar como se mueve la densidad a lo largo del día más que las cantidades
+ - eligiendo la cantidad de filas en la que se distribuirán las facetas  (`nrow = 4`)
+ - agregando título, subtítulo, y nota al pie con fuente
+ - eligiendo un tema apropiado
+
+```{r}
+ggmap(CABA) +
+    geom_density2d_filled(data = filter(delitos, !is.na(franja), tipo == "Hurto (sin violencia)"),
+               aes(x = longitud, y = latitud), alpha = .5) +
+    guides(fill = FALSE) +
+    facet_wrap(vars(franja), nrow = 4) +
+    labs(title = "Ciudad de Buenos Aires: concentración espacial de hurtos",
+         subtitle = "según hora del día, durante el año 2020",
+         caption = "fuente: https://mapa.seguridadciudad.gob.ar") +
+    theme_void()
 ```
 
