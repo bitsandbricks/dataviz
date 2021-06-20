@@ -20,5 +20,6 @@ Imports:
     sf,
     dplyr,
     ggplot2,
-    ggmap
+    ggmap,
+    learnr
 License: CC BY 4.0
