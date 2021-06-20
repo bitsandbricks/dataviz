@@ -7,7 +7,7 @@
 
 <!-- badges: end -->
 
-El paquete dataviz contiene seis clases de un curso breve de visualización de datos con R.
+El paquete `dataviz` contiene seis clases de un curso breve de visualización de datos con R.
 
 ## Instalación
 
