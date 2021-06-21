@@ -15,8 +15,9 @@ library(learnr)
 library(ggplot2)
 library(dplyr)
 knitr::opts_chunk$set(echo = FALSE, comment = "")
-# Obtenemos datos de GapMinder
-gapminder <- dataviz::gapminder
+#gapminder <- dataviz::gapminder
+gapminder <- read.csv("https://bitsandbricks.github.io/data/gapminder.csv")
+names(gapminder) <- c("pais", "continente", "año", "expVida", "pobl", "PBIpc")
 ```
 
 ## Introducción
