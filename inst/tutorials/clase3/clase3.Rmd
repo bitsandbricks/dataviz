@@ -14,7 +14,7 @@ runtime: shiny_prerendered
 library(learnr)
 library(ggplot2)
 library(dplyr)
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, comment = "")
 
 
 # asignando nivel de ingresos en base a

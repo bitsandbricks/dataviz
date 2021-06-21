@@ -14,7 +14,6 @@ runtime: shiny_prerendered
 library(learnr)
 library(ggplot2)
 library(dplyr)
-library(ggmap)
 knitr::opts_chunk$set(echo = FALSE, comment = "")
 # Obtenemos datos de GapMinder
 gapminder <- dataviz::gapminder

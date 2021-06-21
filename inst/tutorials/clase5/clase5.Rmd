@@ -16,7 +16,7 @@ muestra_de_fechas <- delitos %>%
     pull(fecha)
 
 
-knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, comment = "")
 ```
 
 
@@ -102,7 +102,7 @@ Empecemos por un gráfico de barras (`geom_bar()`)con la cantidad de eventos reg
 
 ```{r barras_mes, exercise=TRUE}
 ggplot(radios) +
-  geom____(___)
+  geom___(___)
 ```
 
 ```{r barras_mes-hint}

@@ -8,7 +8,7 @@ runtime: shiny_prerendered
 library(learnr)
 library(ggplot2)
 library(sf)
-#knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(comment = "")
 subte_lineas <- read_sf("http://bitsandbricks.github.io/data/subte_lineas.geojson")
 subte_estaciones <- read_sf("http://bitsandbricks.github.io/data/subte_estaciones.geojson")
 ```
