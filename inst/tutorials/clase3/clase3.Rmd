@@ -469,7 +469,7 @@ Mientras nos entusiasmamos con tanta información útil y fácilmente legible pa
 
 Existen muchas, muchas otras formas de comparar cantidades, distribuciones y proporciones. Tenemos ["treemaps"](https://r-charts.com/es/parte-todo/treemapify/), ["enjambres de abejas"](https://r-charts.com/es/distribucion/ggbeeswarm/), [¡gráficos de piruleta!](https://r-charts.com/es/ranking/lollipop-ggplot2/), [gráficos de waffle](https://r-charts.com/es/parte-todo/grafico-waffle-ggplot2/), ["ridgeline plots"](https://r-charts.com/es/distribucion/ggridges/), [mapas de calor](https://r-charts.com/es/correlacion/mapa-calor-ggplot2/)... 
 
-Pero no podemos cerrar la lección sin impartir un saber prohibido: cómo hacer gráficos de torta. ¡Si! Los poco prácticos, inferiores frente a la implacable barra, [mal vistos por la comunidad visualizadora](https://www.data-to-viz.com/caveat/pie.html), polémicos gráficos de torta.
+Pero no podemos cerrar la clase sin impartir un saber prohibido: cómo hacer gráficos de torta. ¡Si! Los poco prácticos, inferiores frente a la implacable barra, [mal vistos por la comunidad visualizadora](https://www.data-to-viz.com/caveat/pie.html), polémicos gráficos de torta.
 
 Si hacer una barra que muestre la proporción de valores por categoría es cuestión de: 
 
@@ -489,4 +489,4 @@ ggplot(gapminder_2007, aes(y = "", fill = continente)) +
 
 ¡Ahora ya saben!
 
-Para seguir leyendo sobre la visualización de cantidades, proporciones y distribuciones tienen nada menos que los capítulos [7](https://clauswilke.com/dataviz/histograms-density-plots.html), [8](https://clauswilke.com/dataviz/ecdf-qq.html), [9](https://clauswilke.com/dataviz/boxplots-violins.html), [10](https://clauswilke.com/dataviz/visualizing-proportions.html) y [11](https://clauswilke.com/dataviz/nested-proportions.html) de _Fundamentals of Data Visualization_ por Claus Wilke.
+Para seguir leyendo sobre la visualización de cantidades, proporciones y distribuciones tienen nada menos que los capítulos [7](https://clauswilke.com/dataviz/histograms-density-plots.html), [8](https://clauswilke.com/dataviz/ecdf-qq.html), [9](https://clauswilke.com/dataviz/boxplots-violins.html), [10](https://clauswilke.com/dataviz/visualizing-proportions.html) y [11](https://clauswilke.com/dataviz/nested-proportions.html) de *Fundamentals of Data Visualization* por Claus Wilke.

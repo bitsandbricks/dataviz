@@ -33,7 +33,7 @@ _visualizaciones realizadas con `ggplot2` por el [equipo de visualización y per
 
 </center>
 
-Esta lección será dedicada a ir más allá del aspecto que tienen los gráficos de ggplot _por defecto_, puliéndolos para para su publicación.
+Ahora iremos más allá del aspecto que tienen los gráficos de ggplot _por defecto_, puliéndolos para para su publicación.
 
 Para empezar, activamos [**ggplot2**](https://ggplot2.tidyverse.org/):
 
@@ -134,7 +134,7 @@ ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida)) +
 
 ```
 
-Ahí va queriendo. Necesitamos dos ajustes más para que el parecido sea evidente. Rosling usa el tamaño de los puntos para indicar la población del país, y el color para diferenciar entre continentes. Con lo que aprendimos en la lección anterior, podemos animarnos: las variables que que se mostrarán con esos atributos estéticos son "pobl" y "continente"
+Ahí va queriendo. Necesitamos dos ajustes más para que el parecido sea evidente. Rosling usa el tamaño de los puntos para indicar la población del país, y el color para diferenciar entre continentes. Con lo que aprendimos en la clase anterior, podemos animarnos: las variables que que se mostrarán con esos atributos estéticos son "pobl" y "continente"
 
 ```{r plotminder4, exercise=TRUE}
 ggplot(filter(gapminder, año == 2007), aes(x = PBIpc, y = expVida, ___ = ___, ___ = ___)) +
@@ -246,7 +246,7 @@ ggplot(filter(gapminder, año == 2007),
 
 ### Elijiendo colores a mano
 
-Si comparamos nuestros resultados con los de la visualización televisada por la BBC, notaremos que los colores usados para representar la variable "continente" son distintos. Esto es porque Rosling y su equipo los eligieron a su gusto, mientras que nosotros estamos usando los colores que elige ggplot de forma automática. En la próxima lección veremos como usar escalas de colores pre-diseñadas, con colores elegidos por sus propiedades ideales para usar en visualización. Pero ahora mismo tenemos la oportunidad de elegir de forma explícita los colores que queremos usar, para replicar los del ejemplo. Al cumplirse un [minuto del video](https://youtu.be/jbkSRLYSojo?t=62), oímos a Hans nombrar los colores que usa: "Europe brown, Asia Red...". 
+Si comparamos nuestros resultados con los de la visualización televisada por la BBC, notaremos que los colores usados para representar la variable "continente" son distintos. Esto es porque Rosling y su equipo los eligieron a su gusto, mientras que nosotros estamos usando los colores que elige ggplot de forma automática. En la próxima clase veremos como usar escalas de colores pre-diseñadas, con colores elegidos por sus propiedades ideales para usar en visualización. Pero ahora mismo tenemos la oportunidad de elegir de forma explícita los colores que queremos usar, para replicar los del ejemplo. Al cumplirse un [minuto del video](https://youtu.be/jbkSRLYSojo?t=62), oímos a Hans nombrar los colores que usa: "Europe brown, Asia Red...". 
 Con eso podemos armar una lista con valores y sus colores asignados para pasarle a `ggplot()`. Tomándonos nada menos que tres licencias: no vamos a asignarle un color específico a los países del Medio Oriente porque no aparecen diferenciados en nuestra data, vamos a elegir un color para los dos países de Oceanía que tenemos, y para Europa vamos a elegir un naranja oscuro, porque ese parece ser el color que usaron en lugar de marrón. 
 
 En R tenemos nada menos que 657 colores que podemos llamar por nombre, como "hotpink" o "aquamarine". COmo es imposible recordarlos a todos, se puede recurrir a una [guía de colores](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf) para encontrar los que necesitamos. Habiendo identificado nuestros colores, definimos la escala manual así:
@@ -424,4 +424,4 @@ ggplot(filter(gapminder, año == 2007),
 
 ```
 
-Y con eso, terminamos la lección. 
+Y con eso, terminamos por ahora. Para seguir practicando, en *Data Visualization - A practical introduction* de Kieran Healy tenemos el caítulo: ["Refine your plots":](https://socviz.co/refineplots.html)

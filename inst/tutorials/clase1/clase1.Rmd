@@ -23,7 +23,7 @@ temps_beirut <- temps[temps$city == "Beirut",]
 
 ## Introducción
 
-En esta lección repasaremos un concepto central de `ggplot`, la asignación (_mapping_ en inglés) de atributos estéticos a los valores que toma una variable. Dicho de otra forma, como mostrar de modo perceptible a la vista la diferencia entre valores: con distintos colores, distintos tamaños, distintas posiciones en un gráfico, etc.
+Aquí practicaremos un concepto central de `ggplot`, la asignación (_mapping_ en inglés) de atributos estéticos a los valores que toma una variable. Dicho de otra forma, como mostrar de modo perceptible a la vista la diferencia entre valores: con distintos colores, distintos tamaños, distintas posiciones en un gráfico, etc.
 
 Usaremos el paquete de R [**ggplot2**](https://ggplot2.tidyverse.org/), que incluye funciones para realizar una gran variedad de visualizaciones.
 
@@ -271,7 +271,7 @@ ggplot(temps, aes(x = month, y = temperature, color = city)) +
   geom_boxplot(fill = "navyblue")
 ```
 
-¡Y con eso termina la primera lección!
+¡Y con eso terminamos!
 
 
 Para seguir practicando, un excelente recurso es libro *Data Visualization - A practical introduction* por Kieran Healy. Se puede consultar en línea, y tenemos el capítulo dedicado a los fundamentos de `ggplot` aquí: ["Make a plot":](https://socviz.co/makeplot.html)

@@ -366,7 +366,7 @@ ggplot() +
 
 Este es un caso que amerita elegir los colores de la paleta de visualización a mano. Esto es porque la identidad de las líneas de SUBTE en Buenos Aires está muy asociada a su color oficial, y por lo tanto resulta confuso verlas representadas en otra gama.
 
-Recurriendo a `scale_color_manual()` como hicimos en una lección anterior, aquí queda el ejercicio resuelto:
+Recurriendo a `scale_color_manual()` como hicimos en una clase anterior, aquí queda el ejercicio resuelto:
 
 
 ```{r}
@@ -508,5 +508,7 @@ ggmap(mimapa) +
 
 ```
 
-En esta ocasion no usamos la capa de radios, como si habíamos visualizado en el ejemplo con `ggplot`. ¿Porqué creen que fue? ¿Cómo mostrarían la capa de radios?
+En esta ocasión no usamos la capa de radios, como si habíamos visualizado en el ejemplo con `ggplot`. ¿Porqué creen que fue? ¿Cómo mostrarían la capa de radios?
+
+Y por último, pueden seguir ahondando en la producción de mapas con el capítulo ["Draw maps"](https://socviz.co/maps.html) en *Data Visualization - A practical introduction*.
 
