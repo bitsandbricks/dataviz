@@ -18,6 +18,8 @@ Imports:
     sf,
     dplyr,
     ggplot2,
+    forcats,
+    lubridate,
     ggmap,
     learnr
 License: CC BY 4.0
