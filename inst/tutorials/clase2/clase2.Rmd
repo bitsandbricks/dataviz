@@ -165,7 +165,7 @@ ggplot(filter(gapminder, año == 2007),
 
 ### Eliminando leyendas
 
-En el video de la BBC, la visualización se presenta sin leyendas para reducir al mínimo el texto en pantalla, y que se pueda mirar como casi un cuadro. Para eliminar leyendas en nuestro ggplot, pomos usar `guides`, y dentro asignar el valor `FALSE` a cada atributo estético para el cual no queremos leyenda - por ejemplo, `color = FALSE`. ¿Cómo eliminamos la leyenda de los atributos color y tamaño?
+En el video de la BBC, la visualización se presenta sin leyendas para reducir al mínimo el texto en pantalla, y que se pueda mirar como casi un cuadro. Para eliminar leyendas en nuestro ggplot, podemos usar `guides`, y dentro asignar el valor `FALSE` a cada atributo estético para el cual no queremos leyenda - por ejemplo, `color = FALSE`. ¿Cómo eliminamos la leyenda de los atributos color y tamaño?
 
 
 ```{r plotminder5, exercise=TRUE}
