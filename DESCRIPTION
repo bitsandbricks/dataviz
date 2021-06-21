@@ -1,6 +1,6 @@
 Package: dataviz
 Title: Lecciones de visualización de datos
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     person(given = "H. Antonio",
            family = "Vazquez Brust",
