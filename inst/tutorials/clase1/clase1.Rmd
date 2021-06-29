@@ -39,6 +39,7 @@ El data set con el que practicaremos contiene la temperatura promedio para cada 
 temps_beirut
 ```
 
+
 ## Uso básico de `ggplot` 
 
 
@@ -274,7 +275,14 @@ ggplot(temps, aes(x = month, y = temperature, color = city)) +
 ¡Y con eso terminamos!
 
 
-Para seguir practicando, un excelente recurso es libro *Data Visualization - A practical introduction* por Kieran Healy. Se puede consultar en línea, y tenemos el capítulo dedicado a los fundamentos de `ggplot` aquí: ["Make a plot":](https://socviz.co/makeplot.html)
+Para seguir practicando, pueden obtener así los datos que hemos usado para los ejemplos:
+
+```{r eval=FALSE, echo=TRUE}
+temps <- dataviz::temps
+temps_beirut <- temps[temps$city == "Beirut",]
+```
+
+Y como bibliografía, un excelente recurso es libro *Data Visualization - A practical introduction* por Kieran Healy. Se puede consultar en línea, y tenemos el capítulo dedicado a los fundamentos de `ggplot` aquí: ["Make a plot":](https://socviz.co/makeplot.html)
 
 ```{r out.width="60%", fig.align="center"}
 knitr::include_graphics("https://socviz.co/assets/dv-cover-pupress.jpg")
