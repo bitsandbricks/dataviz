@@ -15,9 +15,10 @@ library(learnr)
 library(ggplot2)
 library(dplyr)
 knitr::opts_chunk$set(echo = FALSE, comment = "")
-#gapminder <- dataviz::gapminder
-gapminder <- read.csv("https://bitsandbricks.github.io/data/gapminder.csv")
-names(gapminder) <- c("pais", "continente", "año", "expVida", "pobl", "PBIpc")
+gapminder <- dataviz::gapminder
+
+color_continentes <- c("Europe" = "darkorange", "Asia" = "red", "Africa" = "blue",
+                       "Americas" = "yellow", "Oceania" = "purple")
 ```
 
 ## Introducción
@@ -165,7 +166,7 @@ ggplot(filter(gapminder, año == 2007),
 
 ### Eliminando leyendas
 
-En el video de la BBC, la visualización se presenta sin leyendas para reducir al mínimo el texto en pantalla, y que se pueda mirar como casi un cuadro. Para eliminar leyendas en nuestro ggplot, podemos usar `guides`, y dentro asignar el valor `FALSE` a cada atributo estético para el cual no queremos leyenda - por ejemplo, `color = FALSE`. ¿Cómo eliminamos la leyenda de los atributos color y tamaño?
+En el video de la BBC, la visualización se presenta sin leyendas para reducir al mínimo el texto en pantalla, y que se pueda mirar como casi un cuadro. Para eliminar leyendas en nuestro ggplot, podemos usar `guides`, y dentro asignar el valor `"none"` a cada atributo estético para el cual no queremos leyenda - por ejemplo, `color = "none"`. ¿Cómo eliminamos la leyenda de los atributos color y tamaño?
 
 
 ```{r plotminder5, exercise=TRUE}
@@ -191,7 +192,7 @@ ggplot(filter(gapminder, año == 2007),
        aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
   geom_point() +
   scale_x_log10() +
-  guides(color = FALSE, ___ = ___)
+  guides(color = "none", ___ = ___)
 
 ```
 
@@ -200,7 +201,7 @@ ggplot(filter(gapminder, año == 2007),
        aes(x = PBIpc, y = expVida, size = pobl, color = continente)) +
   geom_point() +
   scale_x_log10() +
-  guides(size = FALSE, color = FALSE)
+  guides(size = "none", color = "none")
 
 ```
 ### Lidiando con números grandes
@@ -251,7 +252,7 @@ Con eso podemos armar una lista con valores y sus colores asignados para pasarle
 
 En R tenemos nada menos que 657 colores que podemos llamar por nombre, como "hotpink" o "aquamarine". COmo es imposible recordarlos a todos, se puede recurrir a una [guía de colores](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf) para encontrar los que necesitamos. Habiendo identificado nuestros colores, definimos la escala manual así:
 
-```{r}
+```{r echo=TRUE}
 color_continentes <- c("Europe" = "darkorange", "Asia" = "red", "Africa" = "blue",
                        "Americas" = "yellow", "Oceania" = "purple")
 ```
@@ -424,4 +425,11 @@ ggplot(filter(gapminder, año == 2007),
 
 ```
 
-Y con eso, terminamos por ahora. Para seguir practicando, en *Data Visualization - A practical introduction* de Kieran Healy tenemos el caítulo: ["Refine your plots":](https://socviz.co/refineplots.html)
+Y con eso, terminamos por ahora. Para seguir practicando, podemos obtener los datos que hemos usado aquí con:
+
+```{r echo=TRUE}
+gapminder <- dataviz::gapminder
+```
+
+Y en *Data Visualization - A practical introduction* de Kieran Healy tenemos el capítulo: ["Refine your plots":](https://socviz.co/refineplots.html)
+
