@@ -44,33 +44,32 @@ paises_longevos <- gapminder_2007 %>%
 
 ## Introducción
 
+Una objetivo típico al visualizar datos es el de mostrar la magnitud de un conjunto de números y categorías: la cantidad de medallas olímpicas que han ganado distintos países, la variación anual en venta de pasajes de distintas aerolíneas, los votos recibidos por cada partido político que se presentó a elecciones, etc.
 
-Una objetivo típico al visualizar datos es el de mostrar la magnitud de un conjunto de números  y categorías: la cantidad de medallas olímpicas que han ganado distintos países, la variación anual en venta de pasajes de distintas aerolíneas, los votos recibidos por cada partido político que se presentó a elecciones, etc. 
+Cuando queremos mostrar números absolutos ("el partido *A* obtuvo 500.000 votos") visualizamos **cantidades**.
 
-Cuando queremos mostrar números absolutos ("el partido _A_ obtuvo 500.000 votos") visualizamos **cantidades**.
+Cuando nos interesa entender qué parte del total representan esos números ("el partido *A* obtuvo un 25% del total de votos") visualizamos **proporciones**.
 
-Cuando nos interesa entender qué parte del total representan esos números ("el partido _A_ obtuvo un 25% del total de votos") visualizamos **proporciones**. 
+Cuando nos interesa entender como se reparten los valores de una variable, que tan habituales o inusuales son mostramos una **distribución**. Para ésto último un ejemplo es la distribución etaria de votantes del partido *A*: cuántos votos ha recibido de las personas que se presentaron a los comicios, de cada edad.
 
-Cuando nos interesa entender como se reparten los valores de una variable, que tan habituales o inusuales son mostramos una **distribución**. Para ésto último un ejemplo es la distribución etaria de votantes del partido _A_: cuántos votos ha recibido de las personas que se presentaron a los comicios, de cada edad.  
-
-Por lo simple y efectiva, la herramienta inescapable para visualizar cantidades, proporciones y distribuciones es el gŕafico de barras. A los seres humanos nos resulta muchísimo más fácil comparar "a ojo" diferencias de largo, como la altura a la que llegan las barras, que diferencias de ángulo y área como las que requieren opciones como el gráfico de torta. Abajo se ilustra el punto: el gŕafico de torta _a)_ muestra los mismos valores que el gráfico de barras _b)_, pero en el primero es muy difícil discernir diferencias, mientras que con el segundo se puede lograr de inmediato.
-
+Por lo simple y efectiva, la herramienta inescapable para visualizar cantidades, proporciones y distribuciones es el gŕafico de barras. A los seres humanos nos resulta muchísimo más fácil comparar "a ojo" diferencias de largo, como la altura a la que llegan las barras, que diferencias de ángulo y área como las que requieren opciones como el gráfico de torta. Abajo se ilustra el punto: el gŕafico de torta *a)* muestra los mismos valores que el gráfico de barras *b)*, pero en el primero es muy difícil discernir diferencias, mientras que con el segundo se puede lograr de inmediato.
 
 ```{r out.width="60%", fig.align="center"}
 knitr::include_graphics("https://bitsandbricks.github.io/img/torta_vs_barras.png")
 ```
+
 <center>
+
 Gráfico de torta vs. gráfico de barras, mostrando los mismos valores
 
 </center>
 
+De tan común, el gráfico de barras se vuelve víctima de su propio éxito. A veces resulta repetitivo, aburrido, sobre todo si es el único recurso usado para múltiples visualizaciones que se presentan juntas. De allí la [frase de Amanda Cox](https://hbr.org/2013/03/power-of-visualizations-aha-moment), editora en jefe de periodismo de datos en el *New York Times*:
 
-De tan común, el gráfico de barras se vuelve víctima de su propio éxito. A veces resulta repetitivo, aburrido, sobre todo si es el único recurso usado para múltiples visualizaciones que se presentan juntas. De allí la [frase de Amanda Cox](https://hbr.org/2013/03/power-of-visualizations-aha-moment), editora en jefe de periodismo de datos en el _New York Times_:
-
-> Hay una corriente en el mundo de la visualización de datos que argumenta que todo podría resolverse con un gráfico de barras. 
+> Hay una corriente en el mundo de la visualización de datos que argumenta que todo podría resolverse con un gráfico de barras.
 >
 > Eso bien podría ser cierto, pero también sería un mundo sin gracia.
-  
+
 En las siguientes secciones veremos como resolver la visualización de cantidades, proporcionesy distribuciones con barras y sin ellas... ¡e intentado ponerle gracia al asunto!
 
 ## Cantidades y proporciones
@@ -125,7 +124,7 @@ ggplot(paises_longevos, aes(x = pais, y = expVida, color = continente)) +
   geom_col()
 ```
 
-¡Ups! Cuando  usamos el atributo "color" con geometrías de área (como las barras), lo que controlamos es el color de su línea externa. Si bien el recurso funciona para diferenciar categorías, es poco legible. El atributo que necesitamos aquí es "fill", el color de relleno para nuestras barras. Vamos:
+¡Ups! Cuando usamos el atributo "color" con geometrías de área (como las barras), lo que controlamos es el color de su línea externa. Si bien el recurso funciona para diferenciar categorías, es poco legible. El atributo que necesitamos aquí es "fill", el color de relleno para nuestras barras. Vamos:
 
 ```{r geom-col-fill, exercise=TRUE}
 ggplot(paises_longevos, aes(x = ___, y = ___)) +
@@ -144,7 +143,7 @@ ggplot(paises_longevos, aes(x = pais, y = expVida, fill = continente)) +
 
 Así está mejor.
 
-Veamos que pasa cuando tenemos una cantidad bastante mayor de barras. Por ejemplo, para comprarar la expectativa de vida para todos los países en las Américas. En este caso, mostramos las barras en forma horizontal poniendo la variable categórica en las $y$ y la numérica en las $x%:
+Veamos que pasa cuando tenemos una cantidad bastante mayor de barras. Por ejemplo, para comprarar la expectativa de vida para todos los países en las Américas. En este caso, mostramos las barras en forma horizontal poniendo la variable categórica en las $y$ y la numérica en las \$x%:
 
 ```{r geom-col-ejemplo, exercise=TRUE}
 ggplot(gapminder_2007_americas, aes(x = expVida, y = pais)) +
@@ -158,14 +157,14 @@ Aquí los valores desordenados (o en todo caso, ordenados por país al que corre
 Por suerte este tipo de problema tiene arreglo inmediato: hay que ordenar las barras por tamaño. Una forma de hacerlo es con la función `fct_reorder()`, incluida en el paquete [forcats](https://forcats.tidyverse.org/) que trae toda clase de herramientas para trabajar con data categórica. Usando la función con ggplot, usamos dos parámetros: una variable a mostrar, y otra variable por la cual reordenar la variable a mostrar. Para que los países se grafiquen en el orden de expectativa de vida, sería:
 
 ```{r echo=TRUE}
-# Activamos el paquete que inclute la función fct_reorder()
+# Activamos el paquete que incluye la función fct_reorder()
 library(forcats)
 
 ggplot(gapminder_2007_americas, aes(x = expVida, y = fct_reorder(pais, expVida))) +
   geom_col()
 ```
 
-Ahora, vamos a un caso en el cual no queremos mostrar una variable numérica, sino conteos: cuantas veces aparece cada valor en en una variable categórica. Este es el dmonio de `geom_bar()`. 
+Ahora, vamos a un caso en el cual no queremos mostrar una variable numérica, sino conteos: cuantas veces aparece cada valor en en una variable categórica. Este es el dominio de `geom_bar()`.
 
 Para practicar, aquí tenemos los datos de Gapminder para 200. Aquí aparecen con una variable adicional, "nivel de ingreso", que usaremos luego para visualizar subcategorías.
 
@@ -173,7 +172,7 @@ Para practicar, aquí tenemos los datos de Gapminder para 200. Aquí aparecen co
 gapminder_2007
 ```
 
-Visualicemos la cantidad de países en cada continente. O dicho de otra forma, cuantas veces aparece registrado cada continente. Para usar `geom_bar()` asignamos a las $x$ la variable a contar. No hace falta asignar una variable a las $y$,  porque la altura de cada barra no depende de los valores de alguna otra columna, sino del conteo de subcategorías en la variable de las $x$.
+Visualicemos la cantidad de países en cada continente. O dicho de otra forma, cuantas veces aparece registrado cada continente. Para usar `geom_bar()` asignamos a las $x$ la variable a contar. No hace falta asignar una variable a las $y$, porque la altura de cada barra no depende de los valores de alguna otra columna, sino del conteo de subcategorías en la variable de las $x$.
 
 ```{r geom-bar, exercise=TRUE}
 ggplot(gapminder_2007, aes(___)) +
@@ -203,7 +202,8 @@ ggplot(gapminder_2007, aes(x = continente, fill = ___)) +
 ggplot(gapminder_2007, aes(x = continente, fill = nivIngreso)) +
   geom_bar()
 ```
-Si no aclaramos nada, geom_bar() apila las cantidades de cada subgrupo en la categoría que les corresponda. Para mostrar las subcategorías en barras separadas, usamos la opción `position = "dodge"`
+
+Si no aclaramos nada, geom\_bar() apila las cantidades de cada subgrupo en la categoría que les corresponda. Para mostrar las subcategorías en barras separadas, usamos la opción `position = "dodge"`
 
 ```{r geom-bar-position, exercise=TRUE}
 ggplot(gapminder_2007, aes(x = continente, fill = ___)) +
@@ -231,12 +231,10 @@ ggplot(gapminder_2007, aes(x = continente)) +
   geom_bar()
 ```
 
-Para convertirlo en uno que muestre la proporción de países en el total, hacemos tres ajustes:
+Para convertirlo en uno que muestre la proporción de países en el total, hacemos dos ajustes:
 
-- A `x` ya no le asignamos una variable, sino un nombre arbitrario (en texto). El texto es libre y va entre comillas, por ejemplo "proporción", o un texto vacío como "". 
-- La variable de interés (en este caso, "continente") se asigna al atributo estético "fill"
-- 
-
+-   A `x` ya no le asignamos una variable, sino un nombre arbitrario (en texto). El texto es libre y va entre comillas, por ejemplo "proporción", o un texto vacío como "".
+-   La variable de interés (en este caso, "continente") se asigna al atributo estético "fill"
 
 ```{r geom-bar-prop, exercise=TRUE}
 ggplot(gapminder_2007, aes(x = ___, fill = continente)) +
@@ -253,7 +251,7 @@ ggplot(gapminder_2007, aes(x = "", fill = continente)) +
   geom_bar(position = "fill")
 ```
 
-Aquí podemos aprovechar para mostrar como contral la orientación de las barras (horizontales vs. verticales) y su ancho. Ya que las barras se dibujen en forma horizontal usamos "y" en lugar de "x". Para controlar su tamaño, usamos el parámetro `width`. Con valores de `width` menores a 1 se dibujan barras más delgadas, y con mayores a 1 se generan barras más gruesas. Probemos con distintos valores de `width` para ver que pasa:
+Aquí podemos aprovechar para mostrar como controlar la orientación de las barras (horizontales vs. verticales) y su ancho. Para que las barras se dibujen en forma horizontal usamos "y" en lugar de "x". Para controlar su tamaño, usamos el parámetro `width`. Con valores de `width` menores a 1 se dibujan barras más delgadas, y con mayores a 1 se generan barras más gruesas. Probemos con distintos valores de `width` para ver que pasa:
 
 ```{r barra-horizontal, exercise=TRUE}
 ggplot(gapminder_2007, aes(y = "", fill = continente)) +
@@ -277,15 +275,13 @@ ggplot(gapminder_2007, aes(x = continente, fill = nivIngreso)) +
   geom_bar(position = "fill")
 ```
 
-
 ## Distribuciones
-
 
 ### Un clásico: el histograma
 
 La visualización por excelencia para mostrar distribuciones es el histograma, que en la práctica es una variante de... ¡gráfico de barras!.
 
-Hacer un histograma es simple. Por ejemplo, para mostrar cómo se distribuye la variable "PBIpc" (PBI per cápita), la asignamos a las `x` y usamos `geom_histogram()`: 
+Hacer un histograma es simple. Por ejemplo, para mostrar cómo se distribuye la variable "PBIpc" (PBI per cápita), la asignamos a las `x` y usamos `geom_histogram()`:
 
 ```{r geom-histogram, exercise=TRUE}
 ggplot(gapminder_2007, aes(___)) +
@@ -302,11 +298,11 @@ ggplot(gapminder_2007, aes(x = PBIpc)) +
   geom_histogram()
 ```
 
-El histograma muestra el rango que toman los valores (del mínimo al máximo que alcanzan), y con que frecuencia se los observa en cada rango. Por ejemplo, el PBI per cápita de las naciones en 2007 llegar hasta casi 50.000 USD en algún caso, pero los casos por encima de 10.000 USD son infrecuentes. Y de hecho, los valores más comunes rondan los 2.500 USD por habitante. 
+El histograma muestra el rango que toman los valores (del mínimo al máximo que alcanzan), y con que frecuencia se los observa en cada rango. Por ejemplo, el PBI per cápita de las naciones en 2007 llegar hasta casi 50.000 USD en algún caso, pero los casos por encima de 10.000 USD son infrecuentes. Y de hecho, los valores más comunes rondan los 2.500 USD por habitante.
 
-Algo para advertir sobre los histogramas es que su aspecto (y con ello, el mensaje que dan) puede cambiar de acuerdo a la cantidad de intervalos que se usen. Por defecto `geom_histogram()` divide al rango de valores en 30 "bins", o intervalos iguales (por ejemplo "de 0 a 10", "de 10 a 20", etc) y cuenta cuántas observaciones caen en cada uno. Podemos controlar la cantudad de intervalos con el parámetro `bins`. podemos aumentar el nivel de detalle del histograma incrementando la cantidad de intervalos, a costa de perder generalización. Y a la inversa: si reducimos el nivel de intervalos, mostramos una distribución más resumida de la data, a costa de perder detalle.
+Algo para advertir sobre los histogramas es que su aspecto (y con ello, el mensaje que dan) puede cambiar de acuerdo a la cantidad de intervalos que se usen. Por defecto `geom_histogram()` divide al rango de valores en 30 "bins", o intervalos iguales (por ejemplo "de 0 a 10", "de 10 a 20", etc) y cuenta cuántas observaciones caen en cada uno. Podemos controlar la cantidad de intervalos con el parámetro `bins`. podemos aumentar el nivel de detalle del histograma incrementando la cantidad de intervalos, a costa de perder generalización. Y a la inversa: si reducimos el nivel de intervalos, mostramos una distribución más resumida de la data, a costa de perder detalle.
 
-Juguemos con los valores de `bins` para ver como cambia el resultado. ¿Y cual es el número ideal de intervalos? Depende de las características de cada dataset, y de lo que queremos mostrar... ¡no hay una sóla respuesta correcta!
+Juguemos con los valores de `bins` para ver como cambia el resultado. ¿Y cual es el número ideal de intervalos? Depende de las características de cada dataset, y de lo que queremos mostrar... ¡no hay una sola respuesta correcta!
 
 ```{r geom-histogram-bins, exercise=TRUE}
 ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
@@ -315,7 +311,7 @@ ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
 
 ### El gráfico de densidad
 
-Los gráficos de densidad son descendientes directos de los histogramas. Pero en lugar de conteos de observaciones por rango de valores, lo que muestran es la distribución de _probabilidad_ de la variable, es decir que tan probable es encontrar un valor determinado si tomaramos al azar una de las observaciones. A diferencia de los histogramas, que  llevan un par de siglos en uso porque porque son relativamente fáciles de hacer a mano, los (antes) trabajosos gráficos de densidad se han popularizado con la llegada de software y computadoras capaces de realizarlos en un instante. 
+Los gráficos de densidad son descendientes directos de los histogramas. Pero en lugar de conteos de observaciones por rango de valores, lo que muestran es la distribución de *probabilidad* de la variable, es decir que tan probable es encontrar un valor determinado si tomaramos al azar una de las observaciones. A diferencia de los histogramas, que llevan un par de siglos en uso porque porque son relativamente fáciles de hacer a mano, los (antes) trabajosos gráficos de densidad se han popularizado con la llegada de software y computadoras capaces de realizarlos en un instante.
 
 Los gráficos de densidad se hacen de forma análoga a los histogramas, reemplazando `geom_histogram()` `geom_density()`. Probemos con los valores de "PBIpc"
 
@@ -350,7 +346,6 @@ ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
 
 Probemos ahora usando `geom_density()`:
 
-
 ```{r geom-density-fill, exercise=TRUE}
 ggplot(gapminder_2007, aes(___)) +
   ___()
@@ -383,22 +378,18 @@ ggplot(gapminder_2007, aes(x = PBIpc, fill = continente)) +
   geom_density(alpha = 0.5)
 ```
 
-
 ## Escapando de las barras
-
 
 Así como el gráfico de densidad reemplaza las barras por curvas, existen otros recursos de visualización que también traen variedad al representar cantidades, proporciones y distribuciones. En algunos casos, no sólo son una alternativa a las barras sino una opción preferible.
 
-
 ### "Dotplots"
 
-Los _dotplots_ son el equivalente a marcar con un punto donde termina cada barra... y luego borrar las barras. Expresan la misma información de forma más minimalista. Son útiles como reemplazo a gráficos de barras que muestran una gran cantidad de categorías y resultan visualmente "pesados". Recordemos el gráfico con el que mostramos la expectativa de vida en los países de las Américas:
+Los *dotplots* son el equivalente a marcar con un punto donde termina cada barra... y luego borrar las barras. Expresan la misma información de forma más minimalista. Son útiles como reemplazo a gráficos de barras que muestran una gran cantidad de categorías y resultan visualmente "pesados". Recordemos el gráfico con el que mostramos la expectativa de vida en los países de las Américas:
 
 ```{r}
 ggplot(gapminder_2007_americas, aes(x = expVida, y = fct_reorder(pais, expVida))) +
   geom_col()
 ```
-
 
 Un problema que no atendimos antes es que la gran cantidad de barras ocupa casi toda el área disponible, distrayendo del objetivo del gráfico que es resaltar las diferencias entre países. La versión "dotplot" del gráfico resuelve ese problema, y se obtiene con sólo usar `geom_point()` en lugar de `geom_col()`:
 
@@ -412,20 +403,21 @@ ggplot(gapminder_2007_americas, aes(x = expVida, y = fct_reorder(pais, expVida))
   geom_point()
 ```
 
-### Boxplots 
+### Boxplots
 
 Volvamos a nuestras visualizaciones de distribución. Ya hicimos histogramas (con `geom_histogram()`) y gráficos de densidad (con `geom_density()`), pero ahora vamos a usar un "boxplot". Los boxplots pueden interpretarse como un histograma al que se lo ha colgado "de cabeza", y luego resumido mostrando su hitos:
 
 ```{r out.width="80%", fig.align="center"}
 knitr::include_graphics("https://bitsandbricks.github.io/img/leer_un_boxplot.png")
 ```
+
 <center>
+
 Gráfico de torta vs. gráfico de barras, mostrando los mismos valores
 
 </center>
 
-Para hacer un boxplot básico, alcanza con definir un atributo estético: el eje sobre el cual se representarán los valores de la variable de interés; el de las $x$ para que el boxplot se oriente en forma horizontal, o el de las $y$ para el más usado formato vertical. Visualizemos entonces entonce el PBI ("PBIpc") de los países en el eje de las $y$, llamando a `geom_boxplot()`
-
+Para hacer un boxplot básico, alcanza con definir un atributo estético: el eje sobre el cual se representarán los valores de la variable de interés; el de las $x$ para que el boxplot se oriente en forma horizontal, o el de las $y$ para el más usado formato vertical. Visualicemos entonces entonces el PBI ("PBIpc") de los países en el eje de las $y$, llamando a `geom_boxplot()`
 
 ```{r geom-boxplot, exercise=TRUE}
 ggplot(gapminder_2007, aes(___) +
@@ -442,7 +434,7 @@ ggplot(gapminder_2007, aes(y = PBIpc)) +
   geom_boxplot()
 ```
 
-La gracia de los boxplots es que permite mostrar diferencias por categoría de forma más prolija que los histogramas, e incluso que los gráficos de densidad. Para separar por categorías, asignemos una variable categórica, "continente" al eje de las $x$:
+La gracia de los boxplots es que permiten mostrar diferencias por categoría de forma más prolija que los histogramas, e incluso que los gráficos de densidad. Para separar por categorías, asignemos una variable categórica, "continente" al eje de las $x$:
 
 ```{r geom-boxplot2, exercise=TRUE}
 ggplot(gapminder_2007, aes(___) +
@@ -461,27 +453,27 @@ ggplot(gapminder_2007, aes(x = continente, y = PBIpc)) +
 
 Usando como guía el ejemplo la "anatomía de un boxplot" que mostramos antes, deberíamos ser capaces de describir:
 
-- ¿Cuáles son los continentes con mayor y menor PBI per cápita medio?
-- ¿Cuáles son los continentes con mayor dispersión en los valores del PBI de sus países?
-- ¿Los continentes de mayor dispersión tienen valores medios similares?
-- ¿Qué continentes tienen países cuyo PBI resulta un _outlier_ (valor extremo) en comparación con el resto?
+-   ¿Cuáles son los continentes con mayor y menor PBI per cápita medio?
+-   ¿Cuáles son los continentes con mayor dispersión en los valores del PBI de sus países?
+-   ¿Los continentes de mayor dispersión tienen valores medios similares?
+-   ¿Qué continentes tienen países cuyo PBI resulta un *outlier* (valor extremo) en comparación con el resto?
 
 Mientras nos entusiasmamos con tanta información útil y fácilmente legible para el ojo entrenado, vale una aclaración: quienes tienen afinidad con la estadística o la visualización de datos se llevan muy bien con los boxplots, pero para el público general suelen ser indigestos. Y bueno... cuando haga falta ser simples y directos siempre tendremos a nuestras barras.
 
 ### ¡Y mas!
 
-Existen muchas, muchas otras formas de comparar cantidades, distribuciones y proporciones. Tenemos ["treemaps"](https://r-charts.com/es/parte-todo/treemapify/), ["enjambres de abejas"](https://r-charts.com/es/distribucion/ggbeeswarm/), [¡gráficos de piruleta!](https://r-charts.com/es/ranking/lollipop-ggplot2/), [gráficos de waffle](https://r-charts.com/es/parte-todo/grafico-waffle-ggplot2/), ["ridgeline plots"](https://r-charts.com/es/distribucion/ggridges/), [mapas de calor](https://r-charts.com/es/correlacion/mapa-calor-ggplot2/)... 
+Existen muchas, muchas otras formas de comparar cantidades, distribuciones y proporciones. Tenemos ["treemaps"](https://r-charts.com/es/parte-todo/treemapify/), ["enjambres de abejas"](https://r-charts.com/es/distribucion/ggbeeswarm/), [¡gráficos de piruleta!](https://r-charts.com/es/ranking/lollipop-ggplot2/), [gráficos de waffle](https://r-charts.com/es/parte-todo/grafico-waffle-ggplot2/), [gráficos de violín](https://r-charts.com/es/distribucion/grafico-violin-grupo-ggplot2/), ["ridgeline plots"](https://r-charts.com/es/distribucion/ggridges/), [mapas de calor](https://r-charts.com/es/correlacion/mapa-calor-ggplot2/)...
 
 Pero no podemos cerrar la clase sin impartir un saber prohibido: cómo hacer gráficos de torta. ¡Si! Los poco prácticos, inferiores frente a la implacable barra, [mal vistos por la comunidad visualizadora](https://www.data-to-viz.com/caveat/pie.html), polémicos gráficos de torta.
 
-Si hacer una barra que muestre la proporción de valores por categoría es cuestión de: 
+Si hacer una barra que muestre la proporción de valores por categoría es cuestión de:
 
 ```{r echo=TRUE}
 ggplot(gapminder_2007, aes(y = "", fill = continente)) +
   geom_bar(position = "fill")
 ```
 
-Un gráfico de torta no es otra cosa que un gráfico de barras que usa un sistema de [coordenadas polares](https://es.wikipedia.org/wiki/Coordenadas_polares) en lugar de unas cartesianas. Por defecto, ggplot representa los datos usando coordenas cartesianas, pero permite pasar a polares usando `coord_polar()` (y el tema "void" se usa sólo para limpiar todo elemento del plot que no sea deliciosa torta):
+Un gráfico de torta no es otra cosa que un gráfico de barras que usa un sistema de [coordenadas polares](https://es.wikipedia.org/wiki/Coordenadas_polares) en lugar de unas cartesianas. Por defecto, ggplot representa los datos usando coordenadas cartesianas, pero permite pasar a polares usando `coord_polar()` (y el tema "void" se usa sólo para limpiar todo elemento del plot que no sea deliciosa torta):
 
 ```{r echo=TRUE}
 ggplot(gapminder_2007, aes(y = "", fill = continente)) +
