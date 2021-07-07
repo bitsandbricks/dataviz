@@ -412,8 +412,7 @@ knitr::include_graphics("https://bitsandbricks.github.io/img/leer_un_boxplot.png
 ```
 
 <center>
-
-Gráfico de torta vs. gráfico de barras, mostrando los mismos valores
+Anatomía de un boxplot
 
 </center>
 
