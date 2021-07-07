@@ -157,7 +157,7 @@ Aquí los valores desordenados (o en todo caso, ordenados por país al que corre
 
 Por suerte este tipo de problema tiene arreglo inmediato: hay que ordenar las barras por tamaño. Una forma de hacerlo es con la función `fct_reorder()`, incluida en el paquete [forcats](https://forcats.tidyverse.org/) que trae toda clase de herramientas para trabajar con data categórica. Usando la función con ggplot, usamos dos parámetros: una variable a mostrar, y otra variable por la cual reordenar la variable a mostrar. Para que los países se grafiquen en el orden de expectativa de vida, sería:
 
-```{r}
+```{r echo=TRUE}
 # Activamos el paquete que inclute la función fct_reorder()
 library(forcats)
 
