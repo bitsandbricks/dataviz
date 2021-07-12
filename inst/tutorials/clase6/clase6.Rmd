@@ -1,5 +1,5 @@
 ---
-title: "Creando visualizaciones interactivas"
+title: "Agregando interactividad y animación"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
@@ -9,15 +9,37 @@ library(learnr)
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, comment = "")
 ```
 
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-```{r echo=FALSE, fig.align="center", out.width="85%"}
-knitr::include_graphics('https://bitsandbricks.github.io/img/vale.png')
+
+## ¿Para qué incluir interactividad?
+
+Durante el proceso de análisis de datos, uno de los recursos más útiles que nos brinda la programación es la capacidad de "iterar" a gran velocidad: escribir código que se encargue de tareas que serían tediosas de resolver "a mano", y una vez aplicado para un caso en particular volver a usarlo en otros contextos con mínimo esfuerzo adicional. De este modo podemos evaluar distintos aspectos de nuestros datos (identificar valores extremos, calcular métricas agregadas por categoría, realizar modelos estadísticos, obtener gráficos que muestren relaciones, etc) sin que importe tanto si son decenas o millones de observaciones, o si lidiamos con un dataset o con veinte. La gracia de usar código es que permite una automatización de tareas que multiplica nuestra capacidad de análisis, y además nos evita el fastidio de tener que realizar tareas repetitivas... ¡que se encargue la computadora!.
+
+Como si eso fuera poco, existe otro recurso que también permite analizar grandes cantidades de información y sacar conclusiones en forma rápida, que habilita la programación: la visualización interactiva. Así como hemos aprendido a realizar gráficos estáticos, aprendiendo algunos trucos adicionales podremos generar versiones dinámicas, que permiten a la audiencia interactuar con los datos para revisar sus atributos, cambiar las variables comparadas, o "hacer zoom" en distintas áreas para mostrar subconjuntos mas pequeño o más grande de los datos disponibles. 
+
+```{r fig.align="center", echo=FALSE}
+knitr::include_graphics("https://bitsandbricks.github.io/img/visualizacion_interactiva.gif")
 ```
+
+<center>
+
+La visualización interactiva puede combinarse con buenos gestos de manos para máximo impacto
+
+</center>
+
+Una buena visualización interactiva nos permite "interrogar" a los datos de forma intuitiva, explorándolos de acuerdo a las preguntas que nos surgen al verlos en pantalla. Organizar y reorganizar los datos de forma visual puede ayudar a descubrir patrones y relaciones clave que serían difíciles de discernir al verlos en una tabla o incluso en una visualización estática. 
+
+También puede entusiasmarnos compartir una visualización interactiva para hacer accesible ésta capacidad de análisis rápido a un público amplio, invitado a jugar con los datos por su cuenta. Aquí vale aclarar que la audiencia casual rara vez siente ganas de dedicar su tiempo a mover diales para explorar los datos que presentamos. En general una visualización estática, que vaya directo al grano y muestre alguna conclusión, es preferible a una opción interactiva. A pesar de bajar la barrera de entrada al análisis rápido de datos, la interactividad podría ser mucho mas útil para analistas con experiencia que para su audiencia... al menos por ahora. 
+
+## Interactividad con bajo esfuerzo
+
+Uno de los fuertes de `R` es sin dudas la calidad y cantidad de herramientas de visualización disponibles. 
+
+```{r}
+
+```
+
+## Mapas interactivos
+
+
+## Animando las cosas
+

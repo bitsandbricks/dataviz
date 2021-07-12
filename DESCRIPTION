@@ -21,5 +21,6 @@ Imports:
     forcats,
     lubridate,
     ggmap,
-    learnr
+    learnr,
+    plotly
 License: CC BY 4.0
