@@ -24,6 +24,28 @@ En los procesos sociales, el "dónde" suele ser un aspecto clave. Es central par
 
 En R contamos con varios paquete de funciones que permiten manipular información espacial con facilidad. A continuación vamos a aprender a combinarlos con las herramientas que ya hemos aprendido, para hacer análisis geográfico y crear nuestros propios mapas.
 
+### Geometrías
+
+Los archivos de datos geográficos relacionados con fenómenos sociales (datos de cosas que somos y hacemos los humanos, como composición de población, trazado de rutas, ubicación de hospitales, etc) suelen ser de tipo vectorial. Los datos vectoriales expresan la posición y extensión de cosas mediante geometrías, que pueden ser de puntos, de líneas, o de polígonos. En la jerga de los sistemas de información geográfica, se les llama "capas" (_layers_) a los archivos que contienen estas geometrías, y en ese sentido se hablar de combinar capas para crear mapas.
+
+
+```{r out.width="100%", fig.align="center", echo=FALSE}
+knitr::include_graphics("https://bitsandbricks.github.io/img/puntos_lineas_polis.png")
+```
+
+
+<center>
+Puntos, líneas y polígonos
+
+</center>
+
+* Un archivo geográfico con geometría de __puntos__ se utiliza para marcar __posiciones__: por ejemplo, puntos que señalen la ubicación de hospitales.
+
+* La geometría de __líneas__ permite mostrar __recorridos__: la extensión de ríos, de autopistas o de calles, son ejemplos típicos.
+
+* Los __polígonos__ se usan cuando hay que representar __superficies__: el territorio de barrios, provincias o países; el terreno ocupado por parques y plazas, la extensión de parcelas, los límites de áreas especiales como un coto de caza, etc.
+
+
 ### Los datos georreferenciados
 
 El atributo que distingue a los datos georreferenciados, lo que los hace merecer ese nombre, es que representan ubicaciones exactas sobre la superficie de la Tierra. Representar en forma precisa una posición sobre la superficie terrestre es un todo un reto. Para empezar, la Tierra tiene una forma irregular. A pesar de cómo solemos imaginarla y dibujarla, no es una esfera perfecta sino que está "achatada" en los polos, dificultando la matemática necesaria para comparar posiciones y medir distancias. Luego, está el problema de cómo mostrar sobre papel impreso, o en una pantalla digital, -superficies planas- rasgos geográficos que pertenecen a una superficie tridimensional esférica. La solución a estos problemas toma la forma de sistemas de coordenadas de referencia (_CRS_ por sus siglas en inglés), y de proyecciones cartográficas. 
