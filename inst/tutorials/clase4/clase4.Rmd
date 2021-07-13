@@ -9,6 +9,7 @@ library(learnr)
 library(ggplot2)
 library(sf)
 knitr::opts_chunk$set(comment = "")
+radios <- read_sf("https://bitsandbricks.github.io/data/CABA_rc.geojson")
 subte_lineas <- read_sf("http://bitsandbricks.github.io/data/subte_lineas.geojson")
 subte_estaciones <- read_sf("http://bitsandbricks.github.io/data/subte_estaciones.geojson")
 ```
@@ -94,7 +95,6 @@ Podemos leemos el archivo con datos geográficos directo desde internet:
 
 ```{r}
 radios <- read_sf("https://bitsandbricks.github.io/data/CABA_rc.geojson")
-
 ```
 
 Como con cualquier otro dataset, podemos escribir su nombre de variable y ejecutar la línea para ver el contenido: 
