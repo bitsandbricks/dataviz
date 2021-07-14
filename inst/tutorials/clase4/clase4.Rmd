@@ -8,10 +8,19 @@ runtime: shiny_prerendered
 library(learnr)
 library(ggplot2)
 library(sf)
-knitr::opts_chunk$set(comment = "")
+library(ggmap)
+knitr::opts_chunk$set(comment = "", message = FALSE, warning = FALSE)
+
 radios <- read_sf("https://bitsandbricks.github.io/data/CABA_rc.geojson")
 subte_lineas <- read_sf("http://bitsandbricks.github.io/data/subte_lineas.geojson")
 subte_estaciones <- read_sf("http://bitsandbricks.github.io/data/subte_estaciones.geojson")
+color_lineas <- c("A" = "cyan", "B" = "red", "C" = "blue",
+                  "D" = "darkgreen", "E" = "purple", "H" = "yellow")
+
+bbox <- st_bbox(radios)
+names(bbox) <- c("left", "bottom", "right", "top")
+mapa_CABA <- get_stamenmap(bbox, zoom = 12)
+mapa_CABA_toner <- get_stamenmap(bbox, maptype = "toner-lite", zoom = 12)
 ```
 
 
@@ -93,7 +102,7 @@ Practicaremos con datos georeferenciados en polígonos: el territorio de la Ciud
 
 Podemos leemos el archivo con datos geográficos directo desde internet:
 
-```{r}
+```{r eval=FALSE}
 radios <- read_sf("https://bitsandbricks.github.io/data/CABA_rc.geojson")
 ```
 
@@ -421,7 +430,7 @@ Para incluir mapas base en nuestras visualizaciones podemos usar las funciones d
 
 Lo activamos:
 
-```{r}
+```{r eval=FALSE}
 library(ggmap)
 ```
 
@@ -441,12 +450,12 @@ Lo descargamos entregando la bounding box del área que nos interesa (que ya hem
 
 
 ```{r get_stamen, exercise=TRUE}
-mimapa <- get_stamenmap(___, zoom = 11)
+mapa_CABA <- get_stamenmap(___, zoom = 12)
 ```
 
 
 ```{r get_stamen-solution}
-mimapa <- get_stamenmap(bbox, zoom = 12)
+mapa_CABA <- get_stamenmap(bbox, zoom = 12)
 ```
 
 Para ver el resultado usamos `ggmap()`, pasándole como parámetro el mapa que acabamos de descargar:
@@ -456,7 +465,7 @@ ggmap(___)
 ```
 
 ```{r show_stamen-solution}
-ggmap(mimapa)
+ggmap(mapa_CABA)
 ```
 Pueden probar el resultado con niveles de zoom más bajos y más altos, pero cuidado al elegir un zoom elevado para un área grande... pueden tener que esperar un rato largo a que termine la descarga de los datos.
 
@@ -474,23 +483,24 @@ Probamos entonces descargar una monocromática, pasando una vez mas nuestra bbox
 
 
 ```{r get_stamen_toner_lite, exercise=TRUE}
-mimapa <- get_stamenmap(___, ___, zoom = 11)
-ggmap(mimapa)
+mapa_CABA_toner <- get_stamenmap(___, ___, zoom = 12)
+ggmap(mapa_CABA_toner)
 ```
 
 ```{r get_stamen_toner_lite-hint}
-mimapa <- get_stamenmap(bbox, maptype = ___, zoom = 12)
+mapa_CABA_toner <- get_stamenmap(bbox, maptype = ___, zoom = 12)
+ggmap(mapa_CABA_toner)
 ```
 
 ```{r get_stamen_toner_lite-solution}
-mimapa <- get_stamenmap(bbox, maptype = "toner-lite", zoom = 12)
-ggmap(mimapa)
+mapa_CABA_toner <- get_stamenmap(bbox, maptype = "toner-lite", zoom = 12)
+ggmap(mapa_CABA_toner)
 ```
 
 
 Y por fin, para mostrar nuestros propios datos, como hicimos antes con ggplot... la verdad es que no hay mucho esfuerzo extra! Podemos usar casi el mismo código. Sólo necesitamos recordar dos cosas:
 
-* en vez de comenzar con `ggplot()`, comenzamos la visualización con `ggmap(mimapa)`
+* en vez de comenzar con `ggplot()`, comenzamos la visualización con `ggmap(mapa_CABA_toner)`
 * donde usamos `geom_sf()`, agregamos el parámetro `inherit.aes = FALSE`. 
 
 El segundo punto es necesario por que `ggmap()` usa un sistema particular de coordenadas de referencia, que pueden causar problemas si son distintas a la de los datos geográficos que muestra `geom_sf()`. Al agregar ese parámetro, se le indica a `geom_sf()` que no intente usar ("heredar") las coordenadas de `ggmap()`, y listo. 
@@ -520,7 +530,7 @@ ___ +
 ```
 
 ```{r ggmap_sf-solution}
-ggmap(mimapa) +
+ggmap(mapa_CABA_toner) +
   geom_sf(data = subte_lineas, aes(color = LINEA), inherit.aes = FALSE) +
   geom_sf(data = subte_estaciones, aes(color = LINEA), inherit.aes = FALSE) +
   labs(title = "Sistema de transporte subterráneo (SUBTE)",
