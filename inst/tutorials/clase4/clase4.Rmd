@@ -276,7 +276,7 @@ subte_estaciones <- read_sf("http://bitsandbricks.github.io/data/subte_estacione
 subte_estaciones
 ```
 
-Combinar capas mostrado distintas geometrías es simple. Sólo es cuestión de sumar capas de `geom_sf()` asignando a cada una un dataframe espacial a mostrar con el parámetro "data"; por ejemplo, `data = radios`. Mostremos los radios censales (`data = radios`) y el trazado de las líneas de transporte (`data = lineas`) en el mismo mapa:
+Combinar capas mostrado distintas geometrías es simple. Sólo es cuestión de sumar capas de `geom_sf()` asignando a cada una un dataframe espacial a mostrar con el parámetro "data"; por ejemplo, `data = radios`. Mostremos los radios censales (`data = radios`) y el trazado de las líneas de transporte (`data = subte_lineas`) en el mismo mapa:
 
 ```{r geom-sf-multi, exercise=TRUE}
 ggplot() +
