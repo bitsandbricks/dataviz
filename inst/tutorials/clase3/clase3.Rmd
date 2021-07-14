@@ -19,22 +19,22 @@ knitr::opts_chunk$set(echo = FALSE, comment = "")
 
 #dataviz::gapminder
 gapminder <- read.csv("https://bitsandbricks.github.io/data/gapminder.csv")
-names(gapminder) <- c("pais", "continente", "año", "expVida", "pobl", "PBIpc")
 
 # asignando nivel de ingresos en base a
 # https://blogs.worldbank.org/es/opendata/nueva-clasificacion-de-los-paises-segun-el-nivel-de-ingresos-para-2019-y-2020
 # y ajuste por inflación
 gapminder_2007 <- gapminder %>% 
-  filter(año == 2007) %>% 
-    mutate(nivIngreso = case_when(PBIpc > 12375 * 0.8 ~ "alto",
-                                  PBIpc > 3996 * 0.8  ~ "medio alto",
-                                  PBIpc > 1026 * 0.8  ~ "medio bajo",
+  filter(anio == 2007) %>% 
+    mutate(nivIngreso = case_when(PBI_PC > 12375 * 0.8 ~ "alto",
+                                  PBI_PC > 3996 * 0.8  ~ "medio alto",
+                                  PBI_PC > 1026 * 0.8  ~ "medio bajo",
                                   TRUE                ~ "bajo"),
            nivIngreso = ordered(nivIngreso, levels = rev(c("bajo", "medio bajo", "medio alto", "alto"))))
 
+names(gapminder_2007) <- c("pais", "continente", "año", "expVida", "pobl", "PBIpc", "nivIngreso")
+
 gapminder_2007_americas <- gapminder_2007 %>% 
   filter(continente == "Americas")
-    
 
 paises_longevos <- gapminder_2007 %>% 
   group_by(continente) %>% 
