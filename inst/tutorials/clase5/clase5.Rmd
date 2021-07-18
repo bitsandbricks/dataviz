@@ -31,7 +31,7 @@ Para practicar, trabajaremos con un dataset publicado por la Ciudad Autónoma de
 knitr::include_graphics('https://live.staticflickr.com/3410/3346781444_48266ac902_b.jpg')
 ```
 <center>
-subtipo: "Siniestro Vial"
+_subtipo: "Siniestro Vial"_
 
 </center>
 

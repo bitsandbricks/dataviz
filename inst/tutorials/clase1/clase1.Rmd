@@ -62,7 +62,7 @@ knitr::include_graphics("https://bitsandbricks.github.io/img/ggplot_resumen.png"
 
 <center>
 
-_adaptado delmaterial de [David Keyes](https://rfortherestofus.com/)_
+_diagrama de [David Keyes](https://rfortherestofus.com/)_
 </center>
 
 ¿Cómo funciona ésto en la práctica? El caso de uso más simple de ggplot consiste en: 

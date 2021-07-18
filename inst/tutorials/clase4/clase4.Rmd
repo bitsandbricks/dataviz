@@ -45,7 +45,7 @@ knitr::include_graphics("https://bitsandbricks.github.io/img/puntos_lineas_polis
 
 
 <center>
-Puntos, líneas y polígonos
+_Puntos, líneas y polígonos_
 
 </center>
 
@@ -68,7 +68,7 @@ Las proyecciones cartográficas son instrucciones para traducir a un plano la di
 knitr::include_graphics('https://bitsandbricks.github.io/ciencia_de_datos_gente_sociable/imagenes/proyecciones.png')
 ```
 <center>
-Distintos sistemas de proyección cartográfica
+_Distintos sistemas de proyección cartográfica_
 
 </center>
 
@@ -78,7 +78,7 @@ La proyección más famosa es la _Mercator_, en uso desde el siglo XVI cuando fu
 knitr::include_graphics('https://bitsandbricks.github.io/ciencia_de_datos_gente_sociable/imagenes/mapamundi_mercator.png')
 ```
 <center>
-La inescapable proyección Mercator
+_La inescapable proyección Mercator_
 
 </center>
 
@@ -422,7 +422,7 @@ Hasta ahora hemos mostrado nuestros datos georreferenciados "flotando" sobre esp
 knitr::include_graphics('https://bitsandbricks.github.io/img/stamen.png')
 ```
 <center>
-El sitio web de Stamen Maps
+_El sitio web de Stamen Maps_
 
 </center>
 
