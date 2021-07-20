@@ -8,6 +8,7 @@ runtime: shiny_prerendered
 library(learnr)
 library(dplyr)
 library(ggplot2)
+library(ggmap)
 delitos <- dataviz::delitos
 
 set.seed("99")
@@ -15,6 +16,8 @@ muestra_de_fechas <- delitos %>%
     sample_n(5) %>% 
     pull(fecha)
 
+bbox <- make_bbox(delitos$longitud, delitos$latitud)
+CABA <- get_stamenmap(bbox = bbox, maptype = "toner-lite", zoom = 12)
 
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, comment = "")
 ```
@@ -68,28 +71,27 @@ Mediante las funciones disponibles en `lubridate`, podemos extraer:
 
 - El día de la semana al que corresponde cada fecha:
 
-```{r}
+```{r fechas1, exercise=TRUE}
 wday(muestra_de_fechas)
 ```
 
-```{r}
+```{r fechas2, exercise=TRUE}
 wday(muestra_de_fechas, label = TRUE)
 ```
-
 - El mes:
 
-```{r}
+```{r fechas3, exercise=TRUE}
 month(muestra_de_fechas)
 ```
 
 
-```{r}
+```{r fechas4, exercise=TRUE}
 month(muestra_de_fechas, label = TRUE)
 ```
 
 - El año:
 
-```{r}
+```{r fechas5, exercise=TRUE}
 year(muestra_de_fechas)
 ```
 
