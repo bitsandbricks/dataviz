@@ -43,8 +43,7 @@ la ventana de Rstudio, “*Session*” -\> “*Restart R*”)
 También se pueden descargar las clases como archivos `.Rmd` para
 examinar, editar, y ejecutar en RStudio:
 
-  - clase 1: [Visualizar información asignando propiedades estéticas a
-    los
+  - clase 1: [Asignando propiedades estéticas a los
     datos](https://raw.githubusercontent.com/bitsandbricks/dataviz/main/inst/tutorials/clase1/clase1.Rmd)
   - clase 2: [Puliendo gráficos para
     publicar](https://raw.githubusercontent.com/bitsandbricks/dataviz/main/inst/tutorials/clase2/clase2.Rmd)
@@ -54,9 +53,9 @@ examinar, editar, y ejecutar en RStudio:
     geográfica](https://raw.githubusercontent.com/bitsandbricks/dataviz/main/inst/tutorials/clase4/clase4.Rmd)
   - clase 5: [Visualizando patrones espaciales y
     temporales](https://raw.githubusercontent.com/bitsandbricks/dataviz/main/inst/tutorials/clase5/clase5.Rmd)
-  - clase 6: [Creando visualizaciones
-    interactivas](https://raw.githubusercontent.com/bitsandbricks/dataviz/main/inst/tutorials/clase6/clase6.Rmd)
+  - clase 6: [Agregando interactividad y
+    animación](https://raw.githubusercontent.com/bitsandbricks/dataviz/main/inst/tutorials/clase6/clase6.Rmd)
 
 Para descargar las clases, hágase click con el botón derecho sobre el
-link, y en la ventana emergente elegir “descargar enlace cómo…” o “*save
-link as…*”
+link, y en la ventana emergente elegir “*descargar enlace cómo…*” o
+“*save link as…*”
