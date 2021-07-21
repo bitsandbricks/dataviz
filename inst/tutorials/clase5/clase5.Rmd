@@ -9,7 +9,10 @@ library(learnr)
 library(dplyr)
 library(ggplot2)
 library(ggmap)
+library(lubridate)
+
 delitos <- dataviz::delitos
+delitos$fecha <- ymd(delitos$fecha)
 
 set.seed("99")
 muestra_de_fechas <- delitos %>% 
@@ -54,7 +57,7 @@ La fecha es un tipo de dato que puede ser expresado de muchas maneras, dependien
 
 Para empezar, convertimos el campo "fecha" al tipo de dato especializado, que se llama... fecha (_date_). Aquí tenemos que prestar atención al formato en que aparecen los datos de la columna, en general algo como "2018-07-21" (mes, día y año) o "2018-07-21 12:14:24" (mes, día, año y hora, minutos, segundos). Con nuestros datos se da el primer caso, por lo cual la función para convertir ese campo en fecha es `ymd()`; para el segundo caso, seria `ymd_hms()`
 
-```{r}
+```{r eval=FALSE}
 library(lubridate)
 
 delitos$fecha <- ymd(delitos$fecha)
