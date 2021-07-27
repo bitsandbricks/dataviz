@@ -20,10 +20,13 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE, comment = "")
 
 gapminder <- dataviz::gapminder
 
-gapminder_ranking <- gapminder %>% 
-  group_by(across(3)) %>% 
-  arrange(desc(expVida)) %>% 
-  slice(1:10)
+gapminder_ranking2 <- gapminder %>% 
+  group_by(across(3)) %>% # agrupa los datos según el valor de la columna "año"
+  arrange(across(3), across(5, desc)) %>% # ordena los miembros de cada grupo por PBI per cápita, de mayor a menor 
+  mutate(ranking = row_number()) %>% # crea una columna numérica con el ranking
+  filter(ranking <= 10) # retiene solo el "top ten" y descarta las demás filas 
+
+
 
 color_continentes <- c("Europe" = "darkorange", "Asia" = "red", "Africa" = "blue",
                        "Americas" = "yellow", "Oceania" = "purple")
