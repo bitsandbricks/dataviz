@@ -513,6 +513,7 @@ ggplot(gapminder_ranking) +
   facet_wrap(vars(año)) +
   labs(y = NULL, x = "población (millones)")
 ```
+
 Una vez que quedó como lo queremos, la animación se resuelve reemplazando el `facet_wrap()` por una de las funciones de `gganimate` que animan transiciones. Hay varias para elegir, por ejemplo:
 
  - `transition_states()`: Anima transiciones entre "estados" diferentes (por ejemplo, de "en proceso" a "despachado")
@@ -521,7 +522,7 @@ Una vez que quedó como lo queremos, la animación se resuelve reemplazando el `
 	
 Y varias más. Son difíciles de describir, así que no hay mejor modo de entender la diferencia entre los métodos de animación que probarlos. Un buen punto para empezar es el tutorial de ["primeros pasos"](https://gganimate.com/articles/gganimate.html) en el sitio oficial del paquete.
 
-Con la data que tenemos entre manos, queda claro que vamos a usar `transition_states()`, con la variable "año" dictando los distintos momentos a mostrar. Para que el título del plot muestre un texto disinto dependiendo del año en cada momento de la animación, usaremos un truco que aporta `gganimate`: Si en el texto asignado al título incluimos _{frame_time}_, ese indicador será reemplazado por el valor de la variable de tiempo según el punto de la animación.
+Con la data que tenemos entre manos, queda claro que vamos a usar `transition_states()`, con la variable "año" dictando los distintos momentos a mostrar. Para que el título del gráfico muestre un texto distinto dependiendo del año en cada momento de la animación, usaremos un truco que aporta `gganimate`: Si en el texto asignado al título incluimos _{frame_time}_, ese indicador será reemplazado por el valor de la variable de tiempo según el punto de la animación.
 
 Veanse las dos últimas líneas, que contienen el código nuevo, y el resultado:
 
