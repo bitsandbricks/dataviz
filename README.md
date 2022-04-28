@@ -22,7 +22,7 @@ contenidos.
 
 -   **Clase 1:** Asignando propiedades estéticas a los datos
 
-[![](img/Download.png)](./M2_Diplo_CSS/clase1/clase1.zip)
+[![](img/Download.png)](https://github.com/bitsandbricks/dataviz/raw/main/M2_Diplo_CSS/clase1/clase1.zip)
 
 -   **Clase 2:** Puliendo gráficos para publicar
 
