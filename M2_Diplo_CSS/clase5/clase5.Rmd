@@ -1,0 +1,447 @@
+---
+title: "Clase 5 - Agregando interactividad y animación"
+author: "Diplomatura en CSSyHD"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(plotly)
+library(leaflet)
+library(sf)
+library(gganimate)
+library(gifski)
+library(dplyr)
+library(forcats)
+
+options(scipen = 20)
+
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, comment = "")
+
+load("./data/gapminder.rda")
+
+gapminder_ranking <- gapminder %>% 
+  group_by(across(3)) %>% # agrupa los datos según el valor de la columna "año"
+  arrange(across(3), across(5, desc)) %>% # ordena los miembros de cada grupo por PBI per cápita, de mayor a menor 
+  mutate(ranking = row_number()) %>% # crea una columna numérica con el ranking
+  filter(ranking <= 10) # retiene solo el "top ten" y descarta las demás filas 
+
+
+
+color_continentes <- c("Europe" = "darkorange", "Asia" = "red", "Africa" = "blue",
+                       "Americas" = "yellow", "Oceania" = "purple")
+
+load("./data/delitos.rda")
+
+siniestros_viales <- delitos %>% 
+  filter(subtipo == "Siniestro Vial", substr(fecha, 1, 7) == "2020-12")
+
+paleta <- colorFactor(palette = "Set1", domain = siniestros_viales$tipo)
+
+radios <- read_sf("https://bitsandbricks.github.io/data/CABA_rc.geojson")
+paleta2 <- colorNumeric(palette = "viridis", domain = radios$POBLACION / radios$AREA_KM2)
+```
+
+
+## ¿Para qué incluir interactividad?
+
+Durante el proceso de análisis de datos, uno de los recursos más útiles que nos brinda la programación es la capacidad de "iterar" a gran velocidad: escribir código que se encargue de tareas que serían tediosas de resolver "a mano", y una vez aplicado para un caso en particular volver a usarlo en otros contextos con mínimo esfuerzo adicional. De este modo podemos evaluar distintos aspectos de nuestros datos (identificar valores extremos, calcular métricas agregadas por categoría, realizar modelos estadísticos, obtener gráficos que muestren relaciones, etc) sin que importe tanto si son decenas o millones de observaciones, o si lidiamos con un dataset o con veinte. La gracia de usar código es que permite una automatización de tareas que multiplica nuestra capacidad de análisis, y además nos evita el fastidio de tener que realizar tareas repetitivas... ¡que se encargue la computadora!.
+
+Como si eso fuera poco, existe otro recurso que también permite analizar grandes cantidades de información y sacar conclusiones en forma rápida, que habilita la programación: la visualización interactiva. Así como hemos aprendido a realizar gráficos estáticos, aprendiendo algunos trucos adicionales podremos generar versiones dinámicas, que permiten a la audiencia interactuar con los datos para revisar sus atributos, cambiar las variables comparadas, o "hacer zoom" en distintas áreas para mostrar subconjuntos mas pequeño o más grande de los datos disponibles.
+
+![La visualización interactiva puede combinarse con buenos gestos de manos para máximo impacto](https://bitsandbricks.github.io/img/visualizacion_interactiva.gif)
+
+Una buena visualización interactiva nos permite "interrogar" a los datos de forma intuitiva, explorándolos de acuerdo a las preguntas que nos surgen al verlos en pantalla. Organizar y reorganizar los datos de forma visual puede ayudar a descubrir patrones y relaciones clave que serían difíciles de discernir al verlos en una tabla o incluso en una visualización estática.
+
+También puede entusiasmarnos compartir una visualización interactiva para hacer accesible ésta capacidad de análisis rápido a un público amplio, invitado a jugar con los datos por su cuenta. Aquí vale aclarar que la audiencia casual rara vez siente ganas de dedicar su tiempo a mover diales para explorar los datos que presentamos. En general una visualización estática, que vaya directo al grano y muestre alguna conclusión, es preferible a una opción interactiva. A pesar de bajar la barrera de entrada al análisis rápido de datos, la interactividad podría ser mucho mas útil para analistas con experiencia que para su audiencia... al menos por ahora.
+
+## Interactividad con bajo esfuerzo
+
+Uno de los fuertes de `R` es sin dudas la calidad y cantidad de herramientas de visualización disponibles. Además de las funciones incluidas en el lenguaje, y de la "gramática" para realizar todo tipo de gráficos que ofrece `ggplot2`, podemos agregar a nuestro repertorio paquetes adicionales que realizan visualizaciones específicas. En la vertiente de interactividad, son notables los paquetes reunidos bajo el nombre de [htmlwidgets](http://gallery.htmlwidgets.org/), que generan visualizaciones dinámicas con una gran variedad de estilos y recursos.
+
+![Paquetes para la visualización interactiva](https://bitsandbricks.github.io/img/htmlwidgets.png)
+
+La particularidad de los *htmlwidgets* (palabra que yo traduciría como "chirimbolos HTML") es que traen a `R` excelentes funciones de visualización desarrolladas en otro idioma: `JavaScript`. El gran fuerte de `JavaScript` es la generación de contenido interactivo para sitios web. Los paquetes reunidos en la colección *htmlwidgets* "envuelven" el código `Javascript` en instrucciones en `R`, haciendo un puente entre los dos mundos, y permitiendo generar desde `R` visualizaciones que pueden publicarse como contenido web. Para nuestros fines, vamos a concentrarnos en una de las opciones en particular: [`Plotly`](https://plotly.com/r/). Esto debido a que `Plotly` permite convertir nuestros gráficos realizados con `ggplot2` en versiones interactivas, con solo agregar una línea de código. Dicho de otra forma: podemos producir visualizaciones interactivas... ¡sin necesitar nada más que lo que ya hemos aprendido!.
+
+Vamos a demostrarlo con un ejemplo.
+
+Traigamos los datos de Gapminder que ya hemos usado antes:
+
+```{r}
+head(gapminder)
+```
+
+
+Los paquetes que solemos usar:
+
+```{r eval=FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+Y recordemos el código que habíamos usado para crear una visualización como las de Hans Rosling:
+
+```{r}
+color_continentes <- c("Europe" = "darkorange", "Asia" = "red", "Africa" = "blue",
+                       "Americas" = "yellow", "Oceania" = "purple")
+
+ggplot(filter(gapminder, año == 2007),
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  guides(size = "none") +
+  theme_minimal() +
+  labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007",
+       size = "población (millones)", 
+       x = "PBI per capita (USD)", y = "expectativa de vida en años",
+       caption = "fuente: Gapminder, www.gapminder.com")
+```
+
+Para realizar una versión interactiva del mismo gráfico, activamos el paquete `plotly`
+
+```{r eval=FALSE}
+library(plotly)
+```
+
+Ahora solo necesitamos dos cosas:
+
+-   guardar el resultado de nuestra visualización en una variable, que llamaremos -por elegir algo- "p"
+-   pasar la variable que contiene la visualización a la función `ggplotly`, que la convertirá en una versión interactiva.
+
+Y eso es todo. A intentarlo:
+
+```{r}
+p <- ggplot(filter(gapminder, año == 2007),
+              aes(x = PBIpc, y = expVida, size = round(pobl/1000000,2), color = continente)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  guides(size = "none") +
+  theme_minimal() +
+  labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007",
+       size = "población (millones)", 
+       x = "PBI per capita (USD)", y = "expectativa de vida en años",
+       caption = "fuente: Gapminder, www.gapminder.com")
+
+
+ggplotly(p)
+```
+
+Si todo salió bien, debería aparecer una visualización en pantalla muy, muy similar al que hicimos con `ggplot2`... hasta que pasamos el puntero del mouse por encima. Ahí se hace evidente que esta versión es interactiva y permite, entre otras cosas:
+
+-   obtener un recuadro emergente (o *tooltip* en la jerga de interfaces gráficas) al deslizar el puntero del mouse sobre un punto, obteniendo el valor exacto que toman las variables visualizadas
+-   "arrastrar y soltar" con el mouse para definir un área sobre la cual hacer "zoom"
+-   cliquear en las categorías de la leyenda para "prender" o "apagar" los datos correspondientes
+-   seleccionar un subconjunto de los datos para resaltar (con los íconos del rectángulo y del lazo)
+-   guardar la visualización como imagen, incluyendo los ajustes que realizamos (con el ícono de la cámara)
+-   y unas cuantas opciones más a descubrir cliqueando aquí y allá
+
+Por defecto, la "tooltip" muestra las variables que representan los atributos estéticos que asginamos al crear el *ggplot*, dentro de alguna llamada a `aes()` ("x", "y", "color", etc). para controlar cuales aparecen, podemos usar el parámetro "tooltip". Para que sólo se muestren PBI y expectativa de vida, que hemos asignado a $x$ e $y$, usaríamos `ggplotly(p, tooltip = c("x", "y"))`. Algo que suele ser útil es usar la *tooltip* para mostrar en el recuadro valores que no hemos representado visualmente, y así poder incluir información. Podríamos querer que se muestre el país que representa cada punto ya que es práctico poder indicar el país sólo para el punto que se elige, en lugar de llenar la pantalla con etiquetas mostrando los nombres de todos los países a la vez. Para eso "inventamos" un nombre de atributo estético, por ejemplo "para\_plotly" y le asignamos la variable que se verá en la tooltip. `ggplot()` ignora los atributos estéticos que no conoce (no hace nada con ellos), pero `plotly()` los recibe y puede mostrar su valores en el recuadro emergente.
+
+Como siempre, un ejemplo va a hacerlos más claro:
+
+Asignamos la variable que queremos mostrar en la *tooltip* a un atributo estético ad-hoc, como "para\_plotly":
+
+```{r}
+p <- ggplot(filter(gapminder, año == 2007),
+              aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente, para_plotly = pais)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  guides(size = "none") +
+  theme_minimal() +
+  labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007",
+       size = "población (millones)", 
+       x = "PBI per capita (USD)", y = "expectativa de vida en años",
+       caption = "fuente: Gapminder, www.gapminder.com")
+```
+
+Y pedimos a `plotly` que use el atributo para la tooltip:
+
+```{r}
+ggplotly(p, tooltip = c("para_plotly")) 
+```
+
+Y del mismo modo podemos obtener versiones interactivas de los otros tipos de gráficos que sabemos hacer: de barras, boxplots, histogramas, de densidad... y cualquier otro que pueda realizarse con `ggplot()`.
+
+## Mapas interactivos
+
+Con la explosión de de popularidad de los mapas online, con Google Maps al frente, se ha vuelto habitual explorar información geográfica en entornos interactivos, que permiten al usuario desplazarse libremente por la superficie terrestre y cambiar el nivel de zoom con el que se muestran los datos. Mapas con información tan precisa como la posición de los delitos, que incluso permite ver a parcela donde han ocurrido, se beneficia en extremo de la posibilidad de variar la escala de visualización a voluntad.
+
+### Mapas interactivos con leaflet
+
+Desde R es fácil proyectar nuestros datos sobre mapas interactivos, usando el paquete `leaflet`.
+
+Lo activamos con:
+
+```{r eval=FALSE}
+library(leaflet)
+```
+
+Y traemos nuestro dataset de delitos, que incluye sus coordenadas, para mapear.
+
+```{r}
+head(delitos)
+```
+
+Los más de 70.000 registros del dataset podrían resultar "pesados" para un mapa interactivo si no disponemos de bastante memoria RAM, así que practicaremos con una parte del total: los siniestros viales ocurridos en diciembre.
+
+```{r}
+siniestros_viales <- delitos %>% 
+  filter(subtipo == "Siniestro Vial", substr(fecha, 1, 7) == "2020-12")
+```
+
+El uso de `leaflet` es similar al de `ggplot`; uno toma un dataframe y lo muestra mediante capas que exponen distintos aspectos de la información. Para comenzar, usemos `leaflet(siniestros_viales)`
+
+```{r}
+leaflet(siniestros_viales)
+```
+
+... y no obtuvimos mucho. Tal como pasa con `ggplot()`, si uno no define ninguna capa de visualización, el resultado es una especie de lienzo vacío.
+
+Siguiente paso: agregar un mapa base, agregando al código la función `addTiles()`. Para sumar capas a un mapa de `leaflet` usamos " %\>% " en lugar del " + " que requiere `ggplot()`, pero el concepto es el mismo.
+
+```{r}
+leaflet(siniestros_viales) %>% 
+    addTiles() 
+```
+
+Ahora está un poco mejor porque nos encontramos con un mapa, pero falta que aparezcan nuestros datos. ¡Una capa más!: con `addMarkers()`, leaflet se encarga de buscar las columnas que contienen coordenadas, y si aparecen con nombres reconocibles en inglés ("latitude" y "longitude", o "lat" y "lng") las identifica automáticamente y sitúa en el mapa un pin por cada fila.
+
+Si las coordenadas aparecen en columnas con otros nombres (así es en nuestro caso, con nombres en castellano tenemos `longitud` en vez de `longitude`), podemos cambiar los nombres a "lat" y "lng", o dejar la data como está e indicarle a `leaflet` cuáles son los nombres vía parámetros. La capa a agregar sería `addMarkers(lat = ~latitud, lng = ~longitud)`. Obsérvese que leaflet requiere usar el simbolillo "\~" antepuesto a los nombres de columna; esto le indica que debe buscar esos nombres dentro del dataframe declarado dentro de la llamada inicial a `leaflet()`.
+
+```{r}
+leaflet(siniestros_viales) %>% 
+    addTiles() %>%
+    addMarkers(lat = ~latitud, lng = ~longitud)
+```
+
+¡Ya tenemos un mapa reconocible! Para mejorarlo, agregamos el parámetro "popup", que permite mostrar información adicional ciando se cliquea sobre un pin. Por ejemplo, el barrio, contenido en la columna "barrio"):
+
+```{r}
+leaflet(siniestros_viales) %>% 
+    addTiles() %>%
+    addMarkers(lat = ~latitud, lng = ~longitud, popup = ~barrio)
+```
+
+Si en vez de "pines" preferimos señalar las posiciones con puntos usamos `addCircleMarkers()` en lugar de `addMarkers()`:
+
+```{r}
+leaflet(siniestros_viales) %>% 
+    addTiles() %>%
+    addCircleMarkers(lat = ~latitud, lng = ~longitud, popup = ~barrio)
+```
+
+Una ventaja de usar círculos es que podemos cambiarles el color, y así aplicar una escala de colores para visualizar una variable a elegir. Para codificar por color, `leaflet` requiere definir una paleta de colores para aplicar a nuestros datos. A diferencia de `ggplot()` que crea la paleta de forma automática, con leaflet debemos crear una por nuestra cuenta. Por suerte contamos con funciones auxiliares que nos permiten crear paletas a medida, dependiendo del tipo de datos que vamos a mostrar: `colorFactor()` para variables categóricas, `colorNumeric()` para variables numéricas, o `colorQuantile()` también para variables numéricas, pero agrupadas en cuantiles. Cualquiera de las opciones requiere al menos dos parámetros. Uno es "palette", para definir los tonos a usar (aquí funcionan nuestros amigos *viridis*, *magma*, *plasma* e *inferno*, y también las [paletas Brewer](https://data.library.virginia.edu/files/pal_fig_3.png), como *Set1* , *Spectral* o *Accent*). El parámetro restante es "domain", que simplemente toma un vector con los datos que vamos a representar con la paleta.
+
+Digamos que nos interesa mostrar la variable "tipo", que es categórica: distingue entre siniestros que causaron muertes y aquellos que sólo provocaron lesiones. Para crearle una paleta, dado que se trata de una variable categórica, debemos usar:
+
+```{r}
+paleta <- colorFactor(palette = "Set1", domain = siniestros_viales$tipo)
+```
+
+Y luego usamos la paleta ad-hoc en nuestro mapa, asignando `paleta(tipo)` al parámetro "color" :
+
+```{r}
+leaflet(siniestros_viales) %>% 
+    addTiles() %>%
+    addCircleMarkers(lat = ~latitud, lng = ~longitud, popup = ~tipo, 
+                     color = ~paleta(tipo))
+```
+
+También podemos mostrar valores numérico usando el tamaño de los círculos, haciendo que varíen en tamaño para mostrar distintas cantidades. Aquí hay un ligero problema, y es que `leaflet` es literal con el tamaño: si en una fila la variable a mostrar toma el valor "10", su círculo se dibujará en pantalla con unos 10 píxeles de radio. Si el valor es "10.000", los círculos tendrán ese radio aproximado en píxeles y ya ni siquiera entrarán en una pantalla normal. Por eso, al igual que con los colores, suele ser necesario crear alguna escala ad-hoc. En nuestro caso, la única columna que indica cantidades es... "cantidad", que registra el número de personas fallecidas en cada incidente. Los única valores que toma son "NA" (sin fallecidos), 1, ó 2. Para una puesta en pantalla razonable, podemos asignar al parámetro `radius` el resultado de `cantidad * 10`:
+
+```{r}
+leaflet(siniestros_viales) %>% 
+    addTiles() %>%
+    addCircleMarkers(lat = ~latitud, lng = ~longitud, popup = ~paste("víctimas fatales:", as.character(cantidad)), 
+                     color = ~paleta(tipo), radius = ~cantidad * 10)
+```
+
+Los siniestros viales sin víctimas fatales, al tener vacía la columna "cantidad" aparecen de tamaño ínfimo, casi invisibles. Prueben jugar con el valor de "radius", asignado por ejempo `cantidad` (sin multiplicar) para ver que pasa.
+
+
+También es útil agregar una leyenda que explique la codificación de los datos. `leaflet` sólo permite mostrar leyendas basadas en color (no en el tamaño de los círculos), pero algo es algo. Agregamos la leyenda con `addLegend()`, especificando su título, la columna que contiene los valores, y la paleta que los representa:
+
+```{r}
+leaflet(siniestros_viales) %>% 
+    addTiles() %>%
+    addCircleMarkers(lat = ~latitud, lng = ~longitud, popup = ~paste("víctimas fatales:", as.character(cantidad)),
+                     color = ~paleta(tipo), radius = ~cantidad * 10) %>% 
+    addLegend(title = "Tipo de siniestro vial", pal = paleta, values = ~tipo)
+```
+
+Por último, no podemos dejar de mencionar que leaflet trabaja muy bien con dataframes espaciales, los que contienen geometrías georreferenciadas y nos permiten visualizar líneas y polígonos además de puntos.
+
+Para demostrarlo, traemos los radios censales de la ciuda de Buenos Aires con los que ya hemos practicado:
+
+```{r eval=FALSE}
+library(sf)
+radios <- read_sf("https://bitsandbricks.github.io/data/CABA_rc.geojson")
+```
+
+```{r}
+head(radios)
+```
+
+La idea es repetir el mapa de densidad poblacional que hicimos con `ggplot()` en la clase 4. La variable a mostrar vuelve a ser la relación POBLACION/AREA_KM2.
+
+La primer buena noticia es que ahora no hace falta aclarar cuales son las columnas de latitud y de longitud. En un dataframe espacial la información de coordenadas siempre está contenida por la columna `geometry`, y leaflet sabe cómo interpretarla. Por lo tanto, al trabajar con este formato no tenemos que especificar los parámetros `lat` y `lng`.
+
+La segunda buena noticia es que lo que practicamos con el dataset de delitos se aplica en gran medida a este caso. El cambio importante es que ahora usaremos `addPolygons()` en vez de `addCircles()` (porque estamos mostrando geometrías poligonales). Pero lo demas es similar.
+
+De nuevo necesitamos crear una una paleta, esta vez usando `colorNumeric()` ya que lidiamos con una variable numérica:
+
+```{r}
+paleta2 <- colorNumeric(palette = "viridis", domain = radios$POBLACION / radios$AREA_KM2)
+```
+
+Y la llevamos al mapa de forma análoga a como hicimos para mostrar los siniestros viales, pero esta vez al parámetro "fillColor" (¡el color de relleno!) le asignamos `paleta2(POBLACION/AREA_KM2)`:
+
+```{r}
+leaflet(radios) %>% 
+    addTiles() %>%
+    addPolygons(popup = ~paste("barrio:", BARRIO, "</br>población:", as.character(POBLACION)), 
+                fillColor = ~paleta2(POBLACION/AREA_KM2))
+```
+
+El resultado se ve muy poco legible, pero paciencia. De forma similar a cuando pulimos el mapa de densidad realizado con `ggplot()`, aquí tendremos que ajustar unos parámetros para lograr buenos resultados. A saber:
+
+- Usar un mapa base de tonos neutros, para que resalten los colores de nuestra visualización vía `addProviderTiles()` (véase https://rstudio.github.io/leaflet/basemaps.html para más opciones)
+- Eliminar la línea del perímetro de los polígonos, así impidiendo que tape el color de relleno, que es lo que nos interesa, vía `weight = 0`
+- Subir la opacidad del color de relleno, para que se distinga mejor, con `fillOpacity = 0.9`
+
+```{r}
+leaflet(radios) %>% 
+    addProviderTiles(providers$Stamen.TonerLite) %>%
+    addPolygons(popup = ~paste("barrio:", BARRIO, "</br>población:", as.character(POBLACION)), 
+                fillColor = ~paleta2(POBLACION/AREA_KM2),
+                weight = 0,
+                fillOpacity = 0.9)
+```
+
+¡Ahí está mejor!
+
+Esto ha sido sólo una introducción a la producción de mapas interactivos. Para acceder a un recorrido por muchas otras opciones disponibles con `leaflet`, podemos visitar <https://rstudio.github.io/leaflet/>
+
+## Animando las cosas
+
+La animación es un recurso a veces complicado de implementar, pero muy poderoso para hacer que las datos "cuenten una historia". Es sin duda una forma poderosa de comunicar, por su capacidad de llamar la atención de la audiencia y con ello lograr que nos dediquen los siguientes momentos de su día.
+
+Si bien las herramientas para animar gráficos corresponden por tradición al mundo del arte más que del análisis de datos, recientemente ha aparecido una herramienta que brinda a R un marco de trabajo para crear visualizaciones animadas. Se trata de [gganimate](https://gganimate.com/), un paquete que extiende la funcionalidad de `ggplot2` y nos permite tomar como base las visualizaciones que ya sabemos hacer, aplicando un conjunto de funciones especializadas para obtener versiones animadas.
+
+Es imposible mostrar en toda su variedad las formas en que podemos realizar animaciones, pero vamos a mostrar como emular dos estilos bastante conocidos: la [_carrera de gráfico de barras_](https://builtin.com/data-science/bar-chart-races) (que ya es una especie de género en si mismo, con sus detractores y´) y la animación de Gapminder, que vimos en la producción de la BBC para la primera clase de este curso.
+
+### Una carrera de barras
+
+Continuamos con nuestra querida data de Gapminder. ¿Qué tal si mostramos el incremento de la población a través de los años? Lo haremos con una "carrera" entre países, mostrando los que alcanzan mayor cantidad de habitantes en cada año registrado.
+
+Continuando con la estrategia establecida en este curso, aprovecharemos lo que ya sabemos hacer con `ggplot2`, y construiremos sobre eso.
+
+El primer ingrediente a resolver para la animación que tenemos en mente es un gráfico de barras, que realizaremos con `ggplot()`. Aquí tenemos que tomar algunas decisiones de diseño: 
+
+- Para cada año mostraremos la población alcanzada para los puestos 1 al 10 del ranking de población mundial (tendremos que preparar los datos y crear una columna "ranking")
+- Para mejor legibilidad, hagamos que las barras se dibujen en forma horizontal (esto ya lo hemos practicado, y es consistente con la forma en la que suelen mostrarse las _bar chart races_)
+- Usemos el color de relleno de las barras para mostrar el continente de cada país
+- Agreguemos una etiqueta al final de cada barra para identificar el país.
+
+Primer paso, transformar los datos. Para obtener una versión de los datos que incluya sólo los 10 países con mayor PBI para cada año, podemos usar las funciones de `dplyr`:
+
+```{r}
+gapminder_ranking <- gapminder %>% 
+  group_by(año) %>% # agrupa los datos según el valor de la columna "año"
+  arrange(año, desc(pobl)) %>% # ordena los miembros de cada grupo por PBI per cápita, de mayor a menor 
+  mutate(ranking = row_number()) %>% # crea una columna numérica con el ranking
+  filter(ranking <= 10) # retiene solo el "top ten" y descarta las demás filas 
+```
+
+Nos queda así:
+
+```{r}
+gapminder_ranking
+```
+
+Ahora, a preparar el gráfico. Como insumo para la animación, necesitamos una visualización realizada con `ggplot()`. Hay infinidad de maneras de abordar el desafío; tantas como formas de mostrar poblaciones, países y año. En esta ocasión haremos un "facetado" mostrando el ranking de población con facetas para cada año en el dataset:
+
+```{r}
+ggplot(gapminder_ranking) +
+  geom_col(aes(x = pobl / 1000000, y = factor(ranking), fill = continente)) +
+  geom_text(aes(x = pobl / 1000000, y = factor(ranking), label = pais)) +
+  scale_fill_manual(values = color_continentes) +
+  theme_minimal() +
+  facet_wrap(vars(año)) +
+  labs(y = NULL, x = "población (millones)")
+```
+
+Una vez que quedó como lo queremos, la animación se resuelve reemplazando el `facet_wrap()` por una de las funciones de `gganimate` que animan transiciones. Hay varias para elegir, por ejemplo:
+
+ - `transition_states()`: Anima transiciones entre "estados" diferentes (por ejemplo, de "en proceso" a "despachado")
+ - `transition_time()`: Anima transiciones entre momentos en el tiempo
+ - `transition_layers()`: Anima un gráfico en "capas", de modo que vayan apareciendo en forma gradual
+	
+Y varias más. Son difíciles de describir, así que no hay mejor modo de entender la diferencia entre los métodos de animación que probarlos. Un buen punto para empezar es el tutorial de ["primeros pasos"](https://gganimate.com/articles/gganimate.html) en el sitio oficial del paquete.
+
+Con la data que tenemos entre manos, queda claro que vamos a usar `transition_states()`, con la variable "año" dictando los distintos momentos a mostrar. Para que el título del gráfico muestre un texto distinto dependiendo del año en cada momento de la animación, usaremos un truco que aporta `gganimate`: Si en el texto asignado al título incluimos _{frame_time}_, ese indicador será reemplazado por el valor de la variable de tiempo según el punto de la animación.
+
+Veanse las dos últimas líneas, que contienen el código nuevo, y el resultado:
+
+```{r}
+gapminder_anim1 <- ggplot(gapminder_ranking, aes(group = pais)) +
+  geom_col(aes(x = pobl / 1000000, y = factor(ranking), fill = continente)) +
+  geom_text(aes(x = pobl / 1000000, y = factor(ranking), label = pais)) +
+  scale_fill_manual(values = color_continentes) +
+  theme_minimal() +
+  transition_time(año) +
+  labs(title = "Año: {frame_time}", y = NULL, x = "población (millones)")
+```
+
+Por último, un detalle más: vean que en la primera línea agregamos `aes(group = pais)`. Esto sirve para que `gganimate` entienda que los valores de la esa variable representan a la misma entidad a lo largo de los años, haciendo que cuando un pais gana o pierde puestos esto se refleje en un desplazamiento de su barra. Para ver lo que pasaría si no agregáramos `aes(group = pais)`, ejecuten el código borrando esa parte y revisen los resultados.
+
+### Un mundo en convergencia
+
+Vamos a terminar con nuestra variante de la visualización que Has Rosling llamaba "un mundo en convergencia": el gradual cierre de la enorme brecha que separaba a las principales naciones occidentales industrializadas del resto del mundo.
+
+Recuperemos una vez más nuestro gráfico _gapmindereano_:
+
+```{r}
+ggplot(filter(gapminder, año == 2007),
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  guides(size = "none") +
+  theme_minimal() +
+  labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos 2007",
+       size = "población (millones)", 
+       x = "PBI per capita (USD)", y = "expectativa de vida en años",
+       caption = "fuente: Gapminder, www.gapminder.com")
+```
+
+Bien, aplicando los mismos ajustes que realizamos para animar la carrera de barras, podemos obtener la versión dinámica. Esta vamos a usar todo el dataset, ya que nos interesa tener las mediciones en distintos años. O sea, en lugar del dataset modificado con `filter(gapminder, año == 2007)` lo vamos a usar completo, sin aplicarle filtros.
+
+```{r}
+ggplot(gapminder,
+       aes(x = PBIpc, y = expVida, size = pobl/1000000, color = continente)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_colour_manual(values = color_continentes) + 
+  guides(size = "none") +
+  theme_minimal() +
+  labs(title = "Riqueza vs. salud en los países del mundo", subtitle = "según datos {frame_time}",
+       size = "población (millones)", 
+       x = "PBI per capita (USD)", y = "expectativa de vida en años",
+       caption = "fuente: Gapminder, www.gapminder.com") +
+  transition_time(año)
+```
+
+Y con eso terminamos esta breve introducción a las visualizaciones animadas. Para continuar explorando las muchísimas opciones disponibles con `gganimate()` el mejor mejor recurso -al momento de escribir estas líneas- es el [sitio oficial del paquete](https://gganimate.com/).
+
+Para continuar aprendiendo sobre visualizaciones interactivas, se puede acceder en forma gratuita al contenido del libro [_Interactive web-based data visualization with R, plotly, and shiny_](https://plotly-r.com)" de Carson Sievert.
+
+¡Hasta la próxima!
+
+

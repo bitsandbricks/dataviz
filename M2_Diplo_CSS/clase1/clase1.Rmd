@@ -1,0 +1,166 @@
+---
+title: "Clase 1 - Asignando propiedades estéticas a los datos"
+author: "Diplomatura en Ciencias Sociales Computacionales y Humanidades"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+---
+
+```{r, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+
+# Datos de temperatura, cortesía de https://www.kaggle.com/sudalairajkumar/daily-temperature-of-major-cities
+load(file='./data/temps.rda')
+temps_beirut <- temps[temps$city == "Beirut",]
+
+```
+
+# Introducción
+
+Aquí practicaremos un concepto central de `ggplot`, la asignación (_mapping_ en inglés) de atributos estéticos a los valores que toma una variable. Dicho de otra forma, como mostrar de modo perceptible a la vista la diferencia entre valores: generalmente lo hacemos describiendo posiciones de un valor x y un valor y, pero también puedo definir un tamaño, una forma, o un color.
+
+![](./img/aes.png){width=50%}
+
+Usaremos el paquete de R [**ggplot2**](https://ggplot2.tidyverse.org/), que incluye funciones para realizar una gran variedad de visualizaciones.
+
+
+```{r , echo = TRUE, eval = FALSE}
+# cargar la librería que vamos a usar
+library(ggplot2)
+```
+
+El data set con el que practicaremos contiene la temperatura promedio para cada día del 2019 en la ciudad de Beirut, Líbano:
+
+```{r}
+temps_beirut
+```
+
+
+## Uso básico de `ggplot` 
+
+
+Si le pasamos un dataframe a `ggplot()`, sin agregar nada más, obtenemos un gráfico vacío:
+
+
+```{r}
+ggplot(temps_beirut)
+```
+
+¡Vendría a ser una especie de lienzo en blanco!
+
+Esto es porque necesitamos definir al menos una geometría (el recurso visual con el que vamos a mostrar la información, como líneas, puntos, barras, etc.) y al menos una asignación estética (especificar cuales variables queremos mostrar, y que atributo estético va a representar sus valores, como el color, el tamaño, la transparencia, etc.).
+
+`ggplot()` implementa un marco teórico para la creación de visualizaciones, ["la gramática de los gráficos"](https://www.slideshare.net/0xdata/leland-wilkinson-h2oai-the-grammar-of-graphics-and-the-future-of-big-data-visualization-h2o-world-2019-nyc). Ésta permite expresar en forma concisa los componentes de un gráfico: 
+
+![](./img/ggplot_resumen.png){width=50%}
+ 
+ ¿Cómo funciona ésto en la práctica? El caso de uso más simple de ggplot consiste en: 
+
+- una llamada a la función `ggplot()`, pasándole un dataset y una "asignación de atributos estéticos" (_aesthetic mapping_ en inglés) usando `aes()` 
+- al menos una capa "geom", que define el recurso gráfico que mostrará los datos; por ejemplo `geom_line()` para dibujar líneas o `geom_point()` para dibujar puntos.
+
+A intentarlo. Asignemos la columna `day_of_year` a la posición en el eje de las $x$, la columna `temperature` a las $y$, y usemos `geom_line()` para mostrar los datos.
+
+```{r}
+ggplot(temps_beirut, aes(x = day_of_year, y = temperature)) +
+  geom_line()
+```
+
+Ahora otra vez, pero usando `geom_point()` en vez de `geom_line()`.
+
+```{r}
+ggplot(temps_beirut, aes(x = day_of_year, y = temperature)) +
+  geom_point()
+```
+
+Y ahora intercambiemos las columnas que antes asignamos a las $x$ y a las $y$:
+
+```{r}
+ggplot(temps_beirut, aes(x = temperature, y = day_of_year)) +
+  geom_point()
+```
+
+
+## Otras _geoms_ más complejas
+
+Pueden elegir entre una variada colección de geoms para hacer toda clase de gráficos. Por ejemplo, `geom_boxplot()` crea _boxplots_ (o ["diagramas de caja"](https://economipedia.com/definiciones/diagrama-de-caja.html)). Al hacer boxplots es común mostrar un gráfico separado para cada categoría presente en la data a mostrar, usando para eso el eje de las $x$ o de las $y$. ¡Hagamos eso mismo! Pongamos `month` en el eje $x$ (como variable categórica), `temperature` en el eje de las $y$, y a dibujar cajas con `geom_boxplot()`.
+
+```{r}
+ggplot(temps_beirut, aes(x = month, y = temperature)) +
+  geom_boxplot()
+```
+
+¿Qué pasa si lo damos vuelta?
+
+```{r}
+ggplot(temps_beirut, aes(x = temperature, y = month)) +
+  geom_boxplot()
+```
+
+Más adelante vamos a regresar a los boxplots, explicando cómo se interpretan. 
+
+## Agregando color
+
+
+Ahora pasamos a trabajar con el dataset `temps`, que es similar a `temps_beirut` pero contiene registros para tres ubicaciones adicionales:
+
+
+```{r}
+temps
+```
+
+Hagamos un gráfico de líneas mostrando `temperature` para cada `day_of_year`, usando el atributo estético _color_ para diferencias las líneas según la ciudad que representan.
+
+
+```{r}
+ggplot(temps, aes(x = day_of_year, y = temperature, color = city)) +
+  geom_line()
+```
+
+Vamos de nuevo, esta vez usando `city` como variable en el eje $y$, y `temperature` a representar con color. Este gráfico queda mejor usando`geom_point()`.
+
+```{r}
+ggplot(temps, aes(x = day_of_year, y = city, color = temperature)) +
+  geom_point()
+```
+
+
+## Usando el atributo estético `fill` 
+
+Algunas geoms permiten usar el atributo estético `fill`, que es similar `color` pero se aplica como relleno, "pintando" por dentro áreas como las barras de un gráfico o las regiones en un mapa (`color`, en cambio, se usa para líneas y puntos). Por ejemplo, podemos usar el atributo estético `fill` con `geom_boxplot()` para pintar el interior de cada caja. Vamos a probarlo. Generemos un gráfico de `month` en las $x$, `temperature` en las $y$, y coloreemos el interior de cada caja según su ciudad.
+
+```{r}
+ggplot(temps, aes(x = month, y = temperature, fill = city)) +
+  geom_boxplot()
+```
+
+¿Podemos pintar las líneas de las cajas según el mes, y pintar el interior según la ubicación? Veamos.
+
+```{r}
+ggplot(temps, aes(x = month, y = temperature, color = month, fill = city)) +
+  geom_boxplot()
+```
+
+El gráfico que obtuvimos funciona como recordatorio de que en muchas ocasiones la cantidad de recursos visuales volcados resulta inversamente proporcional a su legibilidad. En general, simple es bueno... pero también conviene saber que podemos combinar varias estéticas dentro de `aes()` cuando resulte necesario.
+
+## Atributos estéticos fijos
+
+Muchos de los atributos estéticos -como `color`, `fill`, y también `size` que cambia el tamaño de puntos y grosor de líneas- pueden ser usados como parámetros fijos para una geom; es decir, que no cambien de acuerdo a los valores de una variable, sino que son iguales para todos las figuras graficadas. Esto se logra definiendo un valor específico, y fuera del llamado a  `aes()`. Por ejemplo, `color = "blue"` en lugar de la asignación de una variable, como `aes(color = city)`. Nótese la diferencia: dentro de la función `aes()`, no definimos colores específicos, ggplot se encarga de eso. Sólo decimos que los valores encontrados en la columna `city` deben corresponder a diferentes colores. (Más adelante vamos a aprender como indicarle a ggplot que use escalas de colores específicas cuando asigna colores por variable).
+
+Intentémoslo con el ejemplo del boxplot en la sección anterior. Asignemos el color como atributo dependiente de la ciudad, pero dejemos el color de las líneas fijo en color azul marino (`"navy blue"`) de acuerdo a los [nombres de colores que R sabe interpretar](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf)
+
+```{r}
+ggplot(temps, aes(x = month, y = temperature, fill = city)) +
+  geom_boxplot(color = "navyblue")
+```
+
+Ahora al revés. Asignemos la variable `city` al color de las líneas, pero dejemos el relleno de las cajas fijo en color `"navyblue"`.
+
+```{r}
+ggplot(temps, aes(x = month, y = temperature, color = city)) +
+  geom_boxplot(fill = "navyblue")
+```
+
+¡Y con eso terminamos!
