@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 El paquete `dataviz` fue realizado en 2021 para la Diplomatura en Ciencias Sociales Computacionales por Antonio Vázquez Brust. Contiene seis clases  de visualización de datos con R realizadas con `learnr`. 
 
-Desde 2022 daremos las clases en RMarkdowns no interactivos. En este repositorio encontrarán el material para ambas modalidades de este curso: interactiva y estática. 
+Desde 2022 daremos las clases en RMarkdowns no interactivos. En este repositorio encontrarán el material para ambas modalidades del dictado de este curso. 
 
 
 ## Clases comprimidas
