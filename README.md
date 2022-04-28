@@ -26,19 +26,19 @@ contenidos.
 
 -   **Clase 2:** Puliendo gráficos para publicar
 
-[![](img/Download.png)](./M2_Diplo_CSS/clase2/clase2.zip)
+[![](img/Download.png)](https://github.com/bitsandbricks/dataviz/raw/main/M2_Diplo_CSS/clase2/clase2.zip)
 
 -   **Clase 3:** Visualizando cantidades, proporciones y distribuciones
 
-[![](img/Download.png)](./M2_Diplo_CSS/clase3/clase3.zip)
+[![](img/Download.png)](https://github.com/bitsandbricks/dataviz/raw/main/M2_Diplo_CSS/clase3/clase3.zip)
 
 -   **Clase 4:** Visualizando información geográfica
 
-[![](img/Download.png)](./M2_Diplo_CSS/clase4/clase4.zip)
+[![](img/Download.png)](https://github.com/bitsandbricks/dataviz/raw/main/M2_Diplo_CSS/clase4/clase4.zip)
 
 -   **Clase 5:** Agregando interactividad y animación
 
-[![](img/Download.png)](./M2_Diplo_CSS/clase5/clase5.zip)
+[![](img/Download.png)](https://github.com/bitsandbricks/dataviz/raw/main/M2_Diplo_CSS/clase5/clase5.zip)
 
 ------------------------------------------------------------------------
 
