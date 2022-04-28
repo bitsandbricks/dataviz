@@ -10,14 +10,15 @@ El paquete `dataviz` fue realizado en 2021 para la Diplomatura en
 Ciencias Sociales Computacionales por Antonio Vázquez Brust. Contiene
 seis clases de visualización de datos con R realizadas con `learnr`.
 
-Pero desde 2022 daremos las clases en RMarkdowns comunes. A continuación
-están los materiales para la cursada estructurados por clases.
-Encontrarán en para clase un botón de descarga de los contenidos.
-
-Al final también encontrarán un tutorial de instalación y uso para la
-versión ’21 del curso.
+Desde 2022 daremos las clases en RMarkdowns no interactivos. En este
+repositorio encontrarán el material para ambas modalidades de este
+curso: interactiva y estática.
 
 ## Clases comprimidas
+
+A continuación están los materiales para la cursada estructurados por
+clases. Encontrarán en para clase un botón de descarga de los
+contenidos.
 
 -   **Clase 1:** Asignando propiedades estéticas a los datos
 
@@ -39,7 +40,11 @@ versión ’21 del curso.
 
 [![](img/Download.png)](./M2_Diplo_CSS/clase5/clase5.zip)
 
-## Instalación
+------------------------------------------------------------------------
+
+## Curso interactivo con `learnr`
+
+### Instalación
 
 Se puede instalar la última versión de `dataviz` en
 [GitHub](https://github.com/) con:
@@ -49,7 +54,7 @@ Se puede instalar la última versión de `dataviz` en
 devtools::install_github("bitsandbricks/dataviz")
 ```
 
-## Ejemplo
+### Ejemplo
 
 Una vez instalado el paquete, puede iniciarse la primera clase (de seis
 en total) con
@@ -67,7 +72,7 @@ Si por alguna razón falla el proceso de iniciar una clase, una solución
 rápida es reiniciar R e intentarlo de nuevo (en la barra de opciones en
 la ventana de Rstudio, “*Session*” -> “*Restart R*”)
 
-## Descarga de las clases en formato .Rmd
+### Descarga de las clases en formato .Rmd
 
 También se pueden descargar las clases como archivos `.Rmd` para
 examinar, editar, y ejecutar en RStudio:
